@@ -1,4 +1,11 @@
+//filename:main.js
 import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/theme-chalk/index.css'
 import App from './App.vue'
+import router from './router' // 导入router
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(ElementPlus)
+app.use(router) // 使用router
+app.mount('#app')
