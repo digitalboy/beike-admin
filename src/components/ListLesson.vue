@@ -1,45 +1,48 @@
 <template>
-    
-        <div class="common-layout">
-            
-                <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog"
-                    table-layout="fixed">
-                    <el-table-column prop="lesson_id" label="课程ID" width="100"></el-table-column>
-                    <el-table-column prop="lesson_name" label="课程名称"></el-table-column>
-                    <el-table-column prop="author" label="作者" width="150"></el-table-column>
-                    <el-table-column prop="lesson_focus" label="教学重点"></el-table-column>
-                    <el-table-column prop="lesson_diff" label="教学难点"></el-table-column>
-                    <el-table-column prop="lesson_ana" label="教材分析" min-width="200">
-                        <template #default="scope">
-                            <!-- <el-tooltip effect="dark" content="双击开始编辑" placement="top"> -->
-                            <div class="text-truncate-container">
-                                <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
-                            </div>
-                            <!-- </el-tooltip> -->
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
-                </el-table>
+    <div class="common-layout">
+
+        <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog" @touchstart="openDialog">
+
+
+            table-layout="fixed">
+            <el-table-column prop="lesson_id" label="课程ID" width="100"></el-table-column>
+            <el-table-column prop="lesson_name" label="课程名称"></el-table-column>
+            <el-table-column prop="author" label="作者" width="150"></el-table-column>
+            <el-table-column prop="lesson_focus" label="教学重点"></el-table-column>
+            <el-table-column prop="lesson_diff" label="教学难点"></el-table-column>
+            <el-table-column prop="lesson_ana" label="教材分析" min-width="200">
+                <template #default="scope">
+                    <!-- <el-tooltip effect="dark" content="双击开始编辑" placement="top"> -->
+                    <div class="text-truncate-container">
+                        <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
+                    </div>
+                    <!-- </el-tooltip> -->
+                </template>
+            </el-table-column>
+            <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
+        </el-table>
 
 
 
-                <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
+        <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
 
-                    <el-form>
-                        <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
-                    </el-form>
+            <el-form>
+                <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
+            </el-form>
 
-                    <template v-slot:footer>
-                        <span class="dialog-footer">
-                            <el-button @click="dialogVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="saveText">确 定</el-button>
-                        </span>
-                    </template>
-                </el-dialog>
-                 <el-divider border-style="dashed"/>
-                <el-button type="primary">增加一课</el-button>
-            
-        </div>   
+            <template v-slot:footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveText">确 定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-divider border-style="dashed" />
+        <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
+            增加一课 {{ selectedOptions }}
+        </el-button>
+
+    </div>
 </template>
 
 
@@ -76,7 +79,7 @@ export default {
             dialogVisible: false,
             textarea: '',
             dialogTitle: '',
-            // dialogWidth: window.innerWidth <= 768 ? '90%' : '70%',
+            selectedOptions: []
         };
     },
 
@@ -96,9 +99,23 @@ export default {
             //console.log('保存的文本：', this.textarea);
             this.dialogVisible = false;
         },
+        async addLesson() {
+            this.$router.push({
+                path: '/AddLesson',
+                query: { selectedOptions: this.selectedOptions.join(',') }
+            });
+        }
     },
 
     mounted() {
+        // 获取选项字符串并分割为一个数组
+        const optionsString = this.$route.query.selectedOptions;
+        this.selectedOptions = optionsString.split(',');
+
+
+        // 打印选择的选项
+        console.log(this.selectedOptions[0]);
+
         axios
             .get("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/bgportlistlesson")
             .then((response) => {
