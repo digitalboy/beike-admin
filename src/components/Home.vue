@@ -1,24 +1,120 @@
-<!-- filename:Home.vue -->
 <template>
-    <div class="home">
-        <h1>Welcome to Home Page</h1>
-        <el-radio-group v-model="selectedOption">
-            <el-radio label="option1">Option 1</el-radio>
-            <el-radio label="option2">Option 2</el-radio>
-            <el-radio label="option3">Option 3</el-radio>
-        </el-radio-group>
+    <div class="home" id="homepage">
+        <div class="radio_container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div v-for="(group, index) in radioGroups" :key="group.id">
+                        <div class="group-container">
+                            <div class="group-wrapper">
+                                <h3 class="group-title">{{ group.title }}</h3>
+                                <el-radio-group v-model="selectedOptions[index]">
+                                    <el-radio class="slide-in" v-for="(option, optionIndex) in group.options"
+                                        :key="optionIndex" :label="option.label">
+                                        {{ option.text }}
+                                    </el-radio>
+                                </el-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <el-button type="primary" @click="sendDataAndRedirect">开始编辑</el-button>
+        </div>
     </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-    name: 'HomeComponent',
+    name: "HomeComponent",
     data() {
         return {
-            selectedOption: ''
+            selectedOptions: ["", "", ""],
+            radioGroups: [],
+        };
+    },
+    async mounted() {
+        try {
+            const response = await axios.get(
+                "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/gettableindex"
+            );
+            console.log(response);
+            this.radioGroups = response.data;
+        } catch (error) {
+            console.error("Error fetching radio options:", error);
         }
+    },
+    methods: {
+        async sendDataAndRedirect() {
+            // 验证是否有未选择的选项
+            if (this.selectedOptions.some((option) => option === "")) {
+                alert("请确保每组单选按钮都已选择！");
+                return;
+            }
+
+            // 发送选择的内容到后台
+            try {
+                const response = await axios.post(
+                    "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/startedit",
+                    { selectedOptions: this.selectedOptions }
+                );
+                console.log("返回了：");
+                console.log(response);
+                console.log(JSON.stringify(response.data, null, 2));
+                // 页面跳转
+                this.$router.push('/ListLesson');
+            } catch (error) {
+                console.error("Error submitting data:", error);
+            }
+        },
+    },
+};
+</script>
+<style scoped>
+.group-wrapper {
+  position: relative;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.group-title {
+  position: absolute;
+  top: -9px;
+  left: 15px;
+  font-size: 14px;
+  background-color: #fff;
+  padding: 0 5px;
+}
+
+.group-container {
+    border: 0px solid #ccc;
+    border-radius: 5px;
+    padding: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.divider-spacing {
+    margin-top: 1rem;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
-</script>
 
-<style scoped></style>
+.slide-in {
+    animation: slideIn 0.5s forwards;
+}
+</style>

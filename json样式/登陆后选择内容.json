@@ -1,0 +1,65 @@
+[
+    {
+        "id": "subject",
+        "title": "请选择学科",
+        "options": [
+            {
+                "id": "subject1",
+                "label": "option1",
+                "text": "语文"
+            },
+            {
+                "id": "subject2",
+                "label": "option2",
+                "text": "数学"
+            },
+            {
+                "id": "subject3",
+                "label": "option3",
+                "text": "英语"
+            }
+        ]
+    },
+    {
+        "id": "grade",
+        "title": "请选择年级",
+        "options": [
+            {
+                "id": "grade4",
+                "label": "grade4",
+                "text": "四年级"
+            },
+            {
+                "id": "grade5",
+                "label": "grade5",
+                "text": "五年级"
+            },
+            {
+                "id": "grade6",
+                "label": "grade6",
+                "text": "六年级"
+            }
+        ]
+    },
+    {
+        "id": "content",
+        "title": "请选择内容",
+        "options": [
+            {
+                "id": "lessontext",
+                "label": "option1",
+                "text": "课文相关"
+            },
+            {
+                "id": "pptoutline",
+                "label": "option2",
+                "text": "PPT大纲"
+            },
+            {
+                "id": "lessondeg",
+                "label": "option3",
+                "text": "课程设计"
+            }
+        ]
+    }
+]

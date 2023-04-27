@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginComponent from '../components/Login.vue'
 import HomeComponent from '../components/Home.vue'
+import ListLesson from '../components/ListLesson.vue' // 添加引用
 
 const routes = [
     {
@@ -13,7 +14,13 @@ const routes = [
         path: '/home',
         name: 'Home',
         component: HomeComponent
+    },
+    {
+        path: '/ListLesson',
+        name: 'ListLesson',
+        component: ListLesson
     }
+
 ]
 
 const router = createRouter({
