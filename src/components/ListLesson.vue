@@ -1,41 +1,78 @@
 <template>
-    <!-- <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog"> -->
-    <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog">
+    <div>
+        <!-- <el-row :gutter="20">
+            <el-col :span="24"> -->
+                <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog"
+                    table-layout="fixed">
+                    <el-table-column prop="lesson_id" label="课程ID" width="100"></el-table-column>
+                    <el-table-column prop="lesson_name" label="课程名称"></el-table-column>
+                    <el-table-column prop="author" label="作者" width="150"></el-table-column>
+                    <el-table-column prop="lesson_focus" label="教学重点"></el-table-column>
+                    <el-table-column prop="lesson_diff" label="教学难点"></el-table-column>
+                    <el-table-column prop="lesson_ana" label="教材分析" min-width="200">
+                        <template #default="scope">
+                            <!-- <el-tooltip effect="dark" content="双击开始编辑" placement="top"> -->
+                                <div class="text-truncate-container">
+                                    <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
+                                </div>
+                            <!-- </el-tooltip> -->
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
+                    <el-table-column label="操作" width="100">
+                        <!-- 操作按钮内容 -->
+                    </el-table-column>
+                </el-table>
+            <!-- </el-col>
+        </el-row> -->
 
-        <el-table-column label="课程ID" width="80">
-            <!-- <template #default="scope">
-                        {{ scope.row.lesson_id }}
-                    </template> -->
-        </el-table-column>
-        <el-table-column prop="lesson_name" label="课程名称" width="150"></el-table-column>
-        <el-table-column prop="author" label="作者" width="150"></el-table-column>
-        <el-table-column prop="lesson_focus" label="教学重点" width="200"></el-table-column>
-        <el-table-column prop="lesson_diff" label="教学难点" width="200"></el-table-column>
-        <el-table-column prop="lesson_ana" label="教学分析" width="250"></el-table-column>
-        <el-table-column prop="teach_adv" label="教学建议" width="150"></el-table-column>
-        <el-table-column label="操作" width="100">
-            <!-- 操作按钮内容 -->
-        </el-table-column>
-    </el-table>
+        <!-- <el-dialog :title="dialogTitle" v-model="dialogVisible" :width="dialogWidth" @close="saveText" draggable> -->
+        <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
 
-    <el-dialog title="编辑文本" v-model="dialogVisible" width="50%" @close="saveText">
+            <el-form>
+                <!-- <el-form-item label="编辑文本"> -->
+                <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
+            </el-form>
 
-        <el-form>
-            <el-form-item label="编辑文本">
-                <el-input v-model="editableText"></el-input>
-            </el-form-item>
-        </el-form>
-        <template v-slot:footer>
-            <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveText">确 定</el-button>
-            </span>
-        </template>
-    </el-dialog>
+            <template v-slot:footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveText">确 定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 
 
-<style scoped></style>
+<style scoped>
+::v-deep .el-textarea__inner {
+    line-height: 2;
+}
+
+.text-truncate-container {
+    position: relative;
+    max-width: 200px;
+    height: 1.2em;
+    overflow: hidden;
+}
+
+.text-truncate-200 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: block;
+}
+
+.text-truncate-100 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    display: inline-block;
+}
+</style>
 
 
 <script>
@@ -47,27 +84,35 @@ export default {
         return {
             lessons: [],
             dialogVisible: false,
-            editableText: ''
+            textarea: '',
+            dialogTitle: '',
+            // dialogWidth: window.innerWidth <= 768 ? '90%' : '70%',
         };
     },
 
+
+
     methods: {
         openDialog(row, column, cell, event) {
-            console.log(event.target.innerText)            
-            console.log(event.target.tagName)            
-            this.editableText = event.target.innerText;            
+            console.log("行：", row.lesson_name)
+            console.log("列：", column.label)
+            console.log("格：", cell)
+            console.log(event.target.tagName)
+            this.dialogTitle = row.lesson_name + column.label;
+            this.textarea = event.target.textContent;
             this.dialogVisible = true;
-            
+
         },
 
         saveText() {
-            console.log('保存的文本：', this.editableText);
+            //console.log('保存的文本：', this.textarea);
             this.dialogVisible = false;
-        }
+        },
 
     },
 
     mounted() {
+
         axios
             .get("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/bgportlistlesson")
             .then((response) => {
@@ -76,7 +121,10 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
-    },
+
+    },    
+
+    
 };
 </script>
 
