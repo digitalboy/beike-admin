@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginComponent from '../components/Login.vue'
 import HomeComponent from '../components/Home.vue'
 import ListLesson from '../components/ListLesson.vue' // 添加引用
+import AddLesson from '../components/AddLesson.vue' // 添加处理
 
 const routes = [
     {
@@ -19,6 +20,11 @@ const routes = [
         path: '/ListLesson',
         name: 'ListLesson',
         component: ListLesson
+    },
+    {
+        path: '/AddLesson',
+        name: 'AddLesson',
+        component: AddLesson
     }
 
 ]

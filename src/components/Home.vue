@@ -1,8 +1,8 @@
 <template>
     <div class="home" id="homepage">
         <div class="radio_container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-6">
+            <el-row type="flex" justify="center">
+                <el-col :span="24" :sm="18" :md="12" :lg="8" :xl="6">
                     <div v-for="(group, index) in radioGroups" :key="group.id">
                         <div class="group-container">
                             <div class="group-wrapper">
@@ -16,14 +16,16 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </el-col>
+            </el-row>
         </div>
         <div>
             <el-button type="primary" @click="sendDataAndRedirect">开始编辑</el-button>
         </div>
     </div>
 </template>
+
+
 
 <script>
 import axios from "axios";
@@ -60,12 +62,13 @@ export default {
                 const response = await axios.post(
                     "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/startedit",
                     { selectedOptions: this.selectedOptions }
-                );
-                console.log("返回了：");
-                console.log(response);
-                console.log(JSON.stringify(response.data, null, 2));
+                );  
+                console.log(JSON.stringify(response.data, null, 2));       
                 // 页面跳转
-                this.$router.push('/ListLesson');
+                this.$router.push({
+                    path: '/ListLesson',
+                    query: { selectedOptions: this.selectedOptions.join(',') }
+                });              
             } catch (error) {
                 console.error("Error submitting data:", error);
             }
