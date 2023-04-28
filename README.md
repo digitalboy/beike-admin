@@ -16,6 +16,6 @@
 ## 变量名
 
 script 中推荐使用小驼峰方式来命名变量，例如：myVariable。
-VUE <template> 模板中使用连字符“-”,例如：<el-button>
+VUE template 模板中使用连字符“-”,例如：el-button
 
 ## 接口
