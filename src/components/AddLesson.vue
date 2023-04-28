@@ -1,14 +1,16 @@
 <template>
     <div class="lesson-container">
         <div class="lesson-header">
-            <el-space wrap size="50">
+            <el-space wrap :size="21">
                 <div class="input-group">
                     <el-text class="label">年级</el-text>
-                    <el-input v-model="gradeinput" class="lesson-input" :placeholder="selectedOptions[1]" disabled style="width: 100px"/>
+                    <el-input v-model="gradeinput" class="lesson-input" :placeholder="selectedOptions[1]" disabled
+                        style="width: 100px" />
                 </div>
                 <div class="input-group">
                     <el-text class="label">科目</el-text>
-                    <el-input v-model="subjectinput" class="lesson-input" :placeholder="selectedOptions[0]" disabled style="width: 100px" />
+                    <el-input v-model="subjectinput" class="lesson-input" :placeholder="selectedOptions[0]" disabled
+                        style="width: 100px" />
                 </div>
                 <div class="input-group">
                     <el-text class="label">单元</el-text>
@@ -25,7 +27,7 @@
                 </div>
                 <div class="input-group">
                     <el-text class="label">作者</el-text>
-                    <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" />
+                    <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" style="width: 150px" />
                 </div>
             </el-space>
         </div>
@@ -51,6 +53,16 @@
                     type="textarea" placeholder="请输入教学建议" />
             </div>
         </div>
+        <div class="tag-group">
+            <el-space wrap :size="21">
+                <el-tag>Tag 1</el-tag>
+                <el-tag class="ml-2" type="success">Tag 2</el-tag>
+                <el-tag class="ml-2" type="info">Tag 3</el-tag>
+                <el-tag class="ml-2" type="warning">Tag 4</el-tag>
+                <el-tag class="ml-2" type="danger">Tag 5</el-tag>
+            </el-space>
+        </div>
+
         <div class="submit-button">
             <el-button type="primary" @click="submitLesson">{{ submitButtonText }}</el-button>
         </div>
@@ -59,6 +71,10 @@
 </template>
 
 <style scoped>
+.tag-group {
+    margin-bottom: 20px;
+}
+
 .lesson-container {
     max-width: 900px;
     margin: 0 auto;
@@ -69,7 +85,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 1px;
 }
 
 .input-group {
@@ -84,7 +100,7 @@
 
 .lesson-input,
 .lesson-textarea {
-    width: 100%;
+    width: 97%;
 }
 </style>
 
@@ -107,7 +123,8 @@ export default {
             lessontitleinput: "",
             authorinput: "",
             gradeinput: "",
-            subjectinput: ""
+            subjectinput: "",
+            spaceSize: "20"
         };
     },
     mounted() {
