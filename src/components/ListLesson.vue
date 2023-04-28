@@ -1,10 +1,9 @@
 <template>
     <div class="common-layout">
 
-        <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog" @touchstart="openDialog">
+        <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog" table-layout="fixed">
 
 
-            table-layout="fixed">
             <el-table-column prop="lesson_id" label="课程ID" width="100"></el-table-column>
             <el-table-column prop="lesson_name" label="课程名称"></el-table-column>
             <el-table-column prop="author" label="作者" width="150"></el-table-column>
@@ -12,15 +11,23 @@
             <el-table-column prop="lesson_diff" label="教学难点"></el-table-column>
             <el-table-column prop="lesson_ana" label="教材分析" min-width="200">
                 <template #default="scope">
-                    <!-- <el-tooltip effect="dark" content="双击开始编辑" placement="top"> -->
-                    <div class="text-truncate-container">
-                        <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
-                    </div>
-                    <!-- </el-tooltip> -->
+
+
+                    <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
+
                 </template>
             </el-table-column>
             <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
-            <el-table-column prop="dis_int" label="学科融合"></el-table-column>
+            <el-table-column prop="dis_int" label="学科融合">
+                <template #default="scope">
+                    <div v-if="scope.row.dis_int_content_id">
+                        <el-button v-for="(content, index) in getDisIntContents(scope.row)" :key="index" type="success"
+                            size="mini">
+                            {{ content.dis_int_name }}
+                        </el-button>
+                    </div>
+                </template>
+            </el-table-column>
         </el-table>
 
 
@@ -106,15 +113,27 @@ export default {
                 path: '/AddLesson',
                 query: { selectedOptions: this.selectedOptions.join(',') }
             });
-        }
+        },
+        getDisIntContents(row) {
+            let disIntContents = [];
+            console.log("disIntContents", disIntContents)
+            for (let key in row) {
+                if (key.startsWith("dis_int_content_id")) {
+                    disIntContents.push({
+                        dis_int_content_id: row[key],
+                        dis_int_name: row[key.replace("id", "name")],
+                        dis_int_content: row[key.replace("id", "content")],
+                    });
+                }
+            }
+            return disIntContents;
+        },
     },
 
     mounted() {
         // 获取选项字符串并分割为一个数组
         const optionsString = this.$route.query.selectedOptions;
         this.selectedOptions = optionsString.split(',');
-
-
         // 打印选择的选项
         console.log(this.selectedOptions[0]);
 
@@ -127,7 +146,6 @@ export default {
                 console.log(error);
             });
     },
-
 
 };
 </script>
