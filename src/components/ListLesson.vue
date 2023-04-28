@@ -1,69 +1,68 @@
 <template>
     <div class="common-layout">
+        <el-row>
+            <el-col :span="22" :offset="1">
+                <el-table :data="lessons" border stripe style="width: 90%" @cell-dblclick="openDialog">
 
-        <el-table :data="lessons" border stripe style="width: 100%" @cell-dblclick="openDialog" table-layout="fixed">
+                    <el-table-column prop="lesson_id" label="课程ID" width="80" @dblclick.stop></el-table-column>
+                    <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
+                    <el-table-column prop="author" label="作者" width="120"></el-table-column>
+                    <el-table-column prop="lesson_focus" label="教学重点" width="180"></el-table-column>
+                    <el-table-column prop="lesson_diff" label="教学难点" width="220"></el-table-column>
+                    <el-table-column prop="lesson_ana" label="教材分析" width="220">
+                        <template #default="scope">
+                            <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="teach_adv" label="教学建议" width="220"></el-table-column>
 
-
-            <el-table-column prop="lesson_id" label="课程ID" width="100"></el-table-column>
-            <el-table-column prop="lesson_name" label="课程名称"></el-table-column>
-            <el-table-column prop="author" label="作者" width="150"></el-table-column>
-            <el-table-column prop="lesson_focus" label="教学重点"></el-table-column>
-            <el-table-column prop="lesson_diff" label="教学难点"></el-table-column>
-            <el-table-column prop="lesson_ana" label="教材分析" min-width="200">
-                <template #default="scope">
-
-
-                    <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
-
-                </template>
-            </el-table-column>
-            <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
-            <el-table-column prop="dis_int" label="学科融合">
-                <template #default="scope">
-                    <div v-if="scope.row.dis_int_content_id">
-                        <el-button v-for="(content, index) in getDisIntContents(scope.row)" :key="index" type="success"
-                            size="mini">
-                            {{ content.dis_int_name }}
-                        </el-button>
-                    </div>
-                </template>
-            </el-table-column>
-        </el-table>
+                    <el-table-column prop="dis_int_contents" label="学科融合" @dblclick.stop>
+                        <template #default="scope">
+                            <el-select v-if="scope.row.dis_int_contents && scope.row.dis_int_contents.length > 0"
+                                v-model="selectedOption" @change="optionSelected(scope.row, $event)">
+                                <el-option v-for="content in scope.row.dis_int_contents" :key="content.dis_int_content_id"
+                                    :label="content.dis_int_name" :value="content.dis_int_content">
+                                </el-option>
+                                <el-option label="添加学科融合" value="add_subject_integration"></el-option>
+                            </el-select>
+                            <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)"
+                                @dblclick.stop>添加学科融合</el-button>
+                        </template>
+                    </el-table-column>
 
 
 
-        <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
+                </el-table>
 
-            <el-form>
-                <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
-            </el-form>
+                <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
+                    <template #title>
+                        <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入标题"></el-input>
+                        <template v-else>{{ dialogTitle }}</template>
+                    </template>
+                    <el-form>
+                        <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
+                    </el-form>
 
-            <template v-slot:footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="saveText">确 定</el-button>
-                </span>
-            </template>
-        </el-dialog>
-        <el-divider border-style="dashed" />
-        <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
-            增加一课 {{ selectedOptions }}
-        </el-button>
-
+                    <template v-slot:footer>
+                        <span class="dialog-footer">
+                            <el-button @click="dialogVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="updateDatabase">确 定</el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+                <div style="margin: 10PX;">
+                    <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
+                        增加一课{{ selectedOptions }}
+                    </el-button>
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
-
 <style scoped>
-::v-deep .el-textarea__inner {
-    line-height: 2;
-}
-
-.text-truncate-container {
-    position: relative;
-    max-width: 200px;
-    height: 1.2em;
-    overflow: hidden;
+.button-container {
+    display: flex;
 }
 
 .text-truncate-200 {
@@ -79,7 +78,6 @@
 <script>
 import axios from "axios";
 
-
 export default {
     data() {
         return {
@@ -87,12 +85,16 @@ export default {
             dialogVisible: false,
             textarea: '',
             dialogTitle: '',
-            selectedOptions: []
+            selectedOptions: [],
+            isSubjectIntegration: false,
         };
     },
 
     methods: {
         openDialog(row, column, cell, event) {
+            if (column.property === 'dis_int_contents' || column.property === 'lesson_id') {
+                return; // Do not respond to double-click events in the 'dis_int_contents' column
+            }
             console.log("行：", row.lesson_name)
             console.log("列：", column.label)
             console.log("格：", cell)
@@ -100,11 +102,11 @@ export default {
             this.dialogTitle = row.lesson_name + column.label;
             this.textarea = event.target.textContent;
             this.dialogVisible = true;
-
         },
 
         saveText() {
             //console.log('保存的文本：', this.textarea);
+            this.isSubjectIntegration = false;
             this.dialogVisible = false;
         },
 
@@ -114,20 +116,47 @@ export default {
                 query: { selectedOptions: this.selectedOptions.join(',') }
             });
         },
-        getDisIntContents(row) {
-            let disIntContents = [];
-            console.log("disIntContents", disIntContents)
-            for (let key in row) {
-                if (key.startsWith("dis_int_content_id")) {
-                    disIntContents.push({
-                        dis_int_content_id: row[key],
-                        dis_int_name: row[key.replace("id", "name")],
-                        dis_int_content: row[key.replace("id", "content")],
-                    });
-                }
+        optionSelected(row, value) {
+            if (value === 'add_subject_integration') {
+                this.addSubjectIntegration(row);
+            } else {
+                this.isSubjectIntegration = true; // 设置为学科融合状态
+                this.dialogTitle = row.lesson_name;
+                this.textarea = value;
+                this.dialogVisible = true;
             }
-            return disIntContents;
         },
+        addSubjectIntegration(row) {
+            console.log('Adding subject integration for row:', row);
+            // 在这里添加你的逻辑以添加学科融合
+        },
+        stop(event) {
+            event.stopPropagation();
+        },
+        async updateDatabase() {
+            try {
+                // 构建要发送给后端的数据对象
+                const data = {
+                    lessonId: this.selectedLesson.lesson_id, // 当前选中的课程的 ID
+                    dialogTitle: this.dialogTitle, // 更新后的标题
+                    textarea: this.textarea // 更新后的内容
+                };
+                console.log(data);
+                // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
+                // 请根据实际情况修改 URL 和其他请求参数
+                const response = await axios.put("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
+
+                if (response.status === 200) {
+                    this.$message.success("更新成功！");
+                    this.dialogVisible = false;
+                } else {
+                    this.$message.error("更新失败，请稍后重试！");
+                }
+            } catch (error) {
+                console.log(error);
+                this.$message.error("更新失败，请稍后重试！");
+            }
+        }
     },
 
     mounted() {
@@ -141,6 +170,8 @@ export default {
             .get("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/bgportlistlesson")
             .then((response) => {
                 this.lessons = response.data;
+                this.dis_int_contents = response.data.dis_int_contents;
+                console.log(response.data.dis_int_contents)
             })
             .catch((error) => {
                 console.log(error);
