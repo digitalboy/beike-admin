@@ -2,7 +2,7 @@
 
 ## 基础
 
-备课包前端开发是基于VUE3.2/vue-router/Node.js/ElementUI2.3等基础之上开发的。
+前端开发是基于VUE3.2/vue-router/Node.js/ElementUI2.3等基础之上开发的。
 
 ## 文件名
 
