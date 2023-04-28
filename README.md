@@ -45,9 +45,9 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
 /v1/users
 /v2/users
 
-# 管理员登录json格式
+# 管理员登录后，后端返回json格式(POST)
 
-'''
+```json
 {
   "code": "0000",
   "data": {
@@ -60,5 +60,72 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
   },
   "desc": "成功"
 }
-
-'''
+```
+# 登录后选择编辑内容，后端返回json格式（GET）
+```json
+[
+  {
+    "id": "subject",
+    "title": "请选择学科",
+    "options": [
+      {
+        "id": "subject1",
+        "label": "语文",
+        "text": "语文"
+      },
+      {
+        "id": "subject2",
+        "label": "数学",
+        "text": "数学"
+      },
+      {
+        "id": "subject3",
+        "label": "option3",
+        "text": "英语"
+      }
+    ]
+  },
+  {
+    "id": "grade",
+    "title": "请选择年级",
+    "options": [
+      {
+        "id": "grade4A",
+        "label": "grade4A",
+        "text": "四年级上"
+      },
+      {
+        "id": "grade5B",
+        "label": "五年级下",
+        "text": "五年级下"
+      },
+      {
+        "id": "grade6",
+        "label": "option3",
+        "text": "六年级"
+      }
+    ]
+  },
+  {
+    "id": "content",
+    "title": "请选择内容",
+    "options": [
+      {
+        "id": "lessontext",
+        "label": "课文相关",
+        "text": "课文相关"
+      },
+      {
+        "id": "pptoutline",
+        "label": "PPT大纲PT",
+        "text": "PPT大纲"
+      },
+      {
+        "id": "lessondeg",
+        "label": "课程设计",
+        "text": "课程设计"
+      }
+    ]
+  }
+]
+```
