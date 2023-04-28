@@ -20,6 +20,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="teach_adv" label="教学建议"></el-table-column>
+            <el-table-column prop="dis_int" label="学科融合"></el-table-column>
         </el-table>
 
 
@@ -99,7 +100,7 @@ export default {
             //console.log('保存的文本：', this.textarea);
             this.dialogVisible = false;
         },
-        
+
         async addLesson() {
             this.$router.push({
                 path: '/AddLesson',

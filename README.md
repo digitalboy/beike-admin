@@ -48,10 +48,12 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
 ## 管理员登录发送数据json(POST)
 
 ```json
+
   {
     phone: '11111111111',
     password: 'qazwsx',
-    rememberMe: false
+    rememberMe: false,
+    admin:true
   }
 
 ```
@@ -63,10 +65,10 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
   "code": "0000",
   "data": {
     "userInfo": {
-      "username": "zhangsan",
-      "userId": 1,
-      "avator": "http://www.xxx.com/upload/xxx.png",
-      "token": "e10adc3949ba59abbe56e057f20f883e"
+    "username": "zhangsan",
+    "userId": 1,
+    "avator": "http://www.xxx.com/upload/xxx.png",
+    "token": "e10adc3949ba59abbe56e057f20f883e"
     }
   },
   "desc": "成功"
