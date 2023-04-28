@@ -99,6 +99,7 @@ export default {
             //console.log('保存的文本：', this.textarea);
             this.dialogVisible = false;
         },
+        
         async addLesson() {
             this.$router.push({
                 path: '/AddLesson',
