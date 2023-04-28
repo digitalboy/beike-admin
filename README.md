@@ -175,12 +175,18 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
 		"dis_int" : null,
 		"author" : "郭沫若",
 		"is_disable" : "0",
-		"dis_int_content_id": 2,
-		"dis_int_name" : "2融合简称",
-		"dis_int_content" : "是个人",
-		"dis_int_content_id": 3,
-		"dis_int_name" : "融合简称",
-		"dis_int_content" : "郭沫若是个人"
+    "dis_int_contents": [
+      {
+        "dis_int_content_id": 2,
+        "dis_int_name": "2融合简称",
+        "dis_int_content": "是个人"
+      },
+      {
+        "dis_int_content_id": 3,
+        "dis_int_name": "融合简称",
+        "dis_int_content": "郭沫若是个人"
+      }
+    ]
 	},
 	{
 		"lesson_id" : 3,
@@ -197,12 +203,18 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
 		"dis_int" : null,
 		"author" : "许地山",
 		"is_disable" : "0",
-		"dis_int_content_id": 7,
-		"dis_int_name" : "融合简称",
-		"dis_int_content" : "郭许地山是个人",
-		"dis_int_content_id": 5,
-		"dis_int_name" : "融合简称",
-		"dis_int_content" : "许地山若是个人"
+		"dis_int_contents": [
+      {
+        "dis_int_content_id": 2,
+        "dis_int_name": "2融合简称",
+        "dis_int_content": "是个人"
+      },
+      {
+        "dis_int_content_id": 3,
+        "dis_int_name": "融合简称",
+        "dis_int_content": "郭沫若是个人"
+      }
+    ]
 	},
 ]
 ```
