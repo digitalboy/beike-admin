@@ -20,7 +20,8 @@ VUE template 模板中使用连字符“-”,例如：el-button
 
 ## 接口
 
-### 使用 RESTful 风格命名：
+### 使用 RESTful 风格命名
+
 RESTful 是一种常用的 API 设计风格，强调资源的表达和状态转换。在 RESTful 风格的 API 中，接口以资源为核心，使用标准的 HTTP 动词（GET、POST、PUT、DELETE 等）表示操作。资源名应该是名词，通常使用复数形式。例如：
 
 GET /users：获取用户列表
@@ -29,7 +30,8 @@ POST /users：创建新用户
 PUT /users/{id}：更新指定 ID 的用户信息
 DELETE /users/{id}：删除指定 ID 的用户
 
-### 使用小写字母和连字符：
+### 使用小写字母和连字符
+
 接口路径中的单词应使用小写字母，并使用连字符（-）分隔。例如：
 /user-profiles
 /order-details
@@ -42,3 +44,21 @@ No！不要使用大写字母、下划线（_）或驼峰命名。
 
 /v1/users
 /v2/users
+
+# 管理员登录json格式
+
+'''
+{
+  "code": "0000",
+  "data": {
+    "userInfo": {
+      "username": "zhangsan",
+      "userId": 1,
+      "avator": "http://www.xxx.com/upload/xxx.png",
+      "token": "e10adc3949ba59abbe56e057f20f883e"
+    }
+  },
+  "desc": "成功"
+}
+
+'''
