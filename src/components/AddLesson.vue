@@ -1,16 +1,17 @@
 <template>
     <div class="lesson-container">
-        <div class="lesson-header">
-            <el-space wrap :size="21">
+        
+        <div class="lesson-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            
                 <div class="input-group">
                     <el-text class="label">年级</el-text>
                     <el-input v-model="gradeinput" class="lesson-input" :placeholder="selectedOptions[1]" disabled
-                        style="width: 100px" />
+                        />
                 </div>
                 <div class="input-group">
                     <el-text class="label">科目</el-text>
                     <el-input v-model="subjectinput" class="lesson-input" :placeholder="selectedOptions[0]" disabled
-                        style="width: 100px" />
+                        />
                 </div>
                 <div class="input-group">
                     <el-text class="label">单元</el-text>
@@ -27,12 +28,13 @@
                 </div>
                 <div class="input-group">
                     <el-text class="label">作者</el-text>
-                    <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" style="width: 150px" />
+                    <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" />
                 </div>
-            </el-space>
+           
         </div>
         <div class="lesson-content">
             <div class="input-group">
+                  
                 <el-text class="label">课文正文</el-text>
                 <el-input v-model="lessonText" :autosize="{ minRows: 5, maxRows: 20 }" class="lesson-textarea"
                     type="textarea" placeholder="请输入课文正文"></el-input>
@@ -53,17 +55,45 @@
                     type="textarea" placeholder="请输入教学建议" />
             </div>
         </div>
-        <div class="tag-group">
-            <el-space wrap :size="21">
-                <el-tag>Tag 1</el-tag>
-                <el-tag class="ml-2" type="success">Tag 2</el-tag>
-                <el-tag class="ml-2" type="info">Tag 3</el-tag>
-                <el-tag class="ml-2" type="warning">Tag 4</el-tag>
-                <el-tag class="ml-2" type="danger">Tag 5</el-tag>
+        <div class="card-group">
+            <el-space :size="6">
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>添加学科融合</span>
+                        </div>
+                    </template>
+                    <div>
+                        
+                        <el-input v-model="dis_int_nameinput1" placeholder="学科融合的标题" style="padding-bottom: 10px" maxlength="15"/>
+                        <el-input v-model="dis_int_contenttextarea1" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
+                            placeholder="Please input" style="width: 100%" />
+                    </div>
+                </el-card>
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>添加学科融合</span>
+                        </div>
+                    </template>
+                    <el-input v-model="dis_int_nameinput2" placeholder="学科融合的标题"  style="padding-bottom: 10px" maxlength="15"/>
+                    <el-input v-model="dis_int_contenttextarea2" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
+                        placeholder="Please input" />
+                </el-card>
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>添加学科融合</span>
+                        </div>
+                    </template>
+                    <el-input v-model="dis_int_nameinput3" placeholder="学科融合的标题"  style="padding-bottom: 10px" maxlength="15"/>
+                    <el-input v-model="dis_int_contenttextarea3" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
+                        placeholder="Please input" />
+                </el-card>
             </el-space>
         </div>
 
-        <div class="submit-button">
+        <div class="submit-button" style="padding-top: 20px;">
             <el-button type="primary" @click="submitLesson">{{ submitButtonText }}</el-button>
         </div>
 
@@ -86,6 +116,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input-group {
@@ -100,7 +132,7 @@
 
 .lesson-input,
 .lesson-textarea {
-    width: 97%;
+    width: 100%;
 }
 </style>
 
@@ -124,7 +156,15 @@ export default {
             authorinput: "",
             gradeinput: "",
             subjectinput: "",
-            spaceSize: "20"
+            dis_int_nameinput1:"",
+            dis_int_nameinput2: "",
+            dis_int_nameinput3: "",
+            dis_int_contenttextarea1:"",
+            dis_int_contenttextarea2: "",
+            dis_int_contenttextarea3: "",
+            dis_int_contents:[],
+            
+            // spaceSize: "20"
         };
     },
     mounted() {
@@ -140,7 +180,7 @@ export default {
     async created() {
         try {
             const response = await axios.get(
-                "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/getunit"
+                "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/getunit" //拿到单元表格
             );
             this.units = response.data;
         } catch (error) {
@@ -155,6 +195,22 @@ export default {
                 return;
             }
 
+             // 构建学科融合数据
+            const dis_int_contents = [
+                {
+                    dis_int_name: this.dis_int_nameinput1,
+                    dis_int_content: this.dis_int_contenttextarea1
+                },
+                {
+                    dis_int_name: this.dis_int_nameinput2,
+                    dis_int_content: this.dis_int_contenttextarea2
+                },
+                {
+                    dis_int_name: this.dis_int_nameinput3,
+                    dis_int_content: this.dis_int_contenttextarea3
+                }
+            ];
+
             // 构建要发送的数据对象
             const lessonData = {
                 grade: this.gradeinput,
@@ -165,7 +221,8 @@ export default {
                 content: this.lessonText,
                 analysis: this.analysisText,
                 target: this.targetText,
-                suggestion: this.suggestionText
+                suggestion: this.suggestionText,
+                dis_int_contents: dis_int_contents
             };
 
             try {

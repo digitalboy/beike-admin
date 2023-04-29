@@ -178,7 +178,6 @@ export default {
                 // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
                 // 请根据实际情况修改 URL 和其他请求参数
                 const response = await axios.put("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
-
                 if (response.status === 200) {
                     this.dialogTitle="";
                     this.textarea="";
