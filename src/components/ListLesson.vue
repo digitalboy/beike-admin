@@ -25,18 +25,15 @@
                                 </el-option>
                                 <el-option label="添加学科融合" value="add_subject_integration"></el-option>
                             </el-select>
-                            <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)"
-                                @dblclick.stop>添加学科融合</el-button>
+                            <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)">添加学科融合</el-button>
                         </template>
                     </el-table-column>
-
-
-
                 </el-table>
 
-                <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" @close="saveText" draggable>
+                <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
                     <template #title>
-                        <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入标题"></el-input>
+                        <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入融合标题" maxlength="15"
+                            type="text" show-word-limit></el-input>
                         <template v-else>{{ dialogTitle }}</template>
                     </template>
                     <el-form>
@@ -46,10 +43,12 @@
                     <template v-slot:footer>
                         <span class="dialog-footer">
                             <el-button @click="dialogVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">确 定</el-button>
+                            <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">确
+                                定</el-button>
                         </span>
                     </template>
                 </el-dialog>
+
                 <div style="margin: 10PX;">
                     <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
                         增加一课{{ selectedOptions }}
@@ -89,28 +88,36 @@ export default {
             isSubjectIntegration: false,
             selectedLesson: null,
             selectedColumnProperty: '',
-            originalText: ''
+            originalText: '',
+            currentdisintcontentid:"",
+            currentdisintname:""
         };
     },
 
     methods: {
         openDialog(row, column, cell, event) {
-            if (column.property === 'dis_int_contents' || column.property === 'lesson_id') {
+            if (column.property === 'dis_int_contents') {
+                console.log("行：", row.lesson_id)
+                console.log("列：", column.label)
+                console.log("格：", cell)
+                this.selectedLesson = row.lesson_id;
+                this.selectedColumnProperty = column.property;
+
                 return; // Do not respond to double-click events in the 'dis_int_contents' column
             }
-            console.log("行：", row.lesson_name)
-            console.log("列：", column.label)
-            console.log("格：", cell)
-            console.log(event.target.tagName)
-            this.dialogTitle = row.lesson_name + column.label;
-            this.textarea = event.target.textContent;
+            // console.log("行：", row.lesson_name)
+            // console.log("列：", column.label)
+            // console.log("格：", cell)
+            // console.log(event.target.tagName)
             this.selectedLesson = row;
             this.selectedColumnProperty = column.property;
+            this.dialogTitle = row.lesson_name + column.label;
+            this.textarea = event.target.textContent;
             this.originalText = event.target.textContent;
             this.dialogVisible = true;
         },
 
-        saveText() {
+        closeDialog() {
             //console.log('保存的文本：', this.textarea);
             this.isSubjectIntegration = false;
             this.dialogVisible = false;
@@ -123,14 +130,18 @@ export default {
             });
         },
         optionSelected(row, value) {
+            this.less
             if (value === 'add_subject_integration') {
                 this.addSubjectIntegration(row);
             } else {
+                //console.log(row.lesson_id);
                 this.isSubjectIntegration = true; // 设置为学科融合状态
                 // 找到与选中 value 对应的对象
                 const selectedContent = row.dis_int_contents.find(content => content.dis_int_content === value);
                 // 获取 dis_int_name 属性
                 this.dialogTitle = selectedContent.dis_int_name;
+                this.currentdisintcontentid = selectedContent.dis_int_content_id;
+                this.currentdisintname = selectedContent.dis_int_name;
                 this.textarea = value;
                 this.dialogVisible = true;
             }
@@ -138,25 +149,39 @@ export default {
 
         addSubjectIntegration(row) {
             console.log('Adding subject integration for row:', row);
-            // 在这里添加你的逻辑以添加学科融合
+            this.isSubjectIntegration = true;         
+            this.dialogVisible = true;
         },
         stop(event) {
             event.stopPropagation();
         },
-        async updateDatabase() {            
+        async updateDatabase() {
+            let data = {};
             try {
-                // 构建要发送给后端的数据对象
-                const data = {
-                    lesson_id: this.selectedLesson.lesson_id, // 当前选中的课程的 ID
-                    whichcolum: this.selectedColumnProperty, // 更新后的标题
-                    newContent: this.textarea // 更新后的内容
-                };
+                if (this.isSubjectIntegration === false) {
+                    // 构建要发送给后端的数据对象
+                    data = {
+                        lesson_id: this.selectedLesson.lesson_id, // 当前选中的课程的 ID
+                        whichcolum: this.selectedColumnProperty, // 更新后的标题
+                        newContent: this.textarea // 更新后的内容
+                    }
+                }
+                else if (this.isSubjectIntegration === true) {
+                    data = {
+                        dis_int_content_id: this.currentdisintcontentid, // 当前选中的融合的 ID
+                        dis_int_name: this.currentdisintname,
+                        newContent: this.textarea // 更新后的内容
+                    }
+                }
+
                 console.log(data);
                 // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
                 // 请根据实际情况修改 URL 和其他请求参数
                 const response = await axios.put("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
 
                 if (response.status === 200) {
+                    this.dialogTitle="";
+                    this.textarea="";
                     this.$message.success("更新成功！");
                     this.dialogVisible = false;
                 } else {
