@@ -46,7 +46,7 @@
                     <template v-slot:footer>
                         <span class="dialog-footer">
                             <el-button @click="dialogVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="updateDatabase">确 定</el-button>
+                            <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">确 定</el-button>
                         </span>
                     </template>
                 </el-dialog>
@@ -87,6 +87,9 @@ export default {
             dialogTitle: '',
             selectedOptions: [],
             isSubjectIntegration: false,
+            selectedLesson: null,
+            selectedColumnProperty: '',
+            originalText: ''
         };
     },
 
@@ -101,6 +104,9 @@ export default {
             console.log(event.target.tagName)
             this.dialogTitle = row.lesson_name + column.label;
             this.textarea = event.target.textContent;
+            this.selectedLesson = row;
+            this.selectedColumnProperty = column.property;
+            this.originalText = event.target.textContent;
             this.dialogVisible = true;
         },
 
@@ -121,11 +127,15 @@ export default {
                 this.addSubjectIntegration(row);
             } else {
                 this.isSubjectIntegration = true; // 设置为学科融合状态
-                this.dialogTitle = row.lesson_name;
+                // 找到与选中 value 对应的对象
+                const selectedContent = row.dis_int_contents.find(content => content.dis_int_content === value);
+                // 获取 dis_int_name 属性
+                this.dialogTitle = selectedContent.dis_int_name;
                 this.textarea = value;
                 this.dialogVisible = true;
             }
         },
+
         addSubjectIntegration(row) {
             console.log('Adding subject integration for row:', row);
             // 在这里添加你的逻辑以添加学科融合
@@ -133,13 +143,13 @@ export default {
         stop(event) {
             event.stopPropagation();
         },
-        async updateDatabase() {
+        async updateDatabase() {            
             try {
                 // 构建要发送给后端的数据对象
                 const data = {
-                    lessonId: this.selectedLesson.lesson_id, // 当前选中的课程的 ID
-                    dialogTitle: this.dialogTitle, // 更新后的标题
-                    textarea: this.textarea // 更新后的内容
+                    lesson_id: this.selectedLesson.lesson_id, // 当前选中的课程的 ID
+                    whichcolum: this.selectedColumnProperty, // 更新后的标题
+                    newContent: this.textarea // 更新后的内容
                 };
                 console.log(data);
                 // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
