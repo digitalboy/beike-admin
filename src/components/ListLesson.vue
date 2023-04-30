@@ -1,68 +1,86 @@
 <template>
-    <div class="common-layout">
-        <el-row>
-            <el-col :span="22" :offset="1">
-                <el-table :data="lessons" border stripe style="width: 90%" @cell-dblclick="openDialog">
-
-                    <el-table-column prop="lesson_id" label="课程ID" width="80" @dblclick.stop></el-table-column>
-                    <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
-                    <el-table-column prop="author" label="作者" width="120"></el-table-column>
-                    <el-table-column prop="lesson_focus" label="教学重点" width="180"></el-table-column>
-                    <el-table-column prop="lesson_diff" label="教学难点" width="220"></el-table-column>
-                    <el-table-column prop="lesson_ana" label="教材分析" width="220">
-                        <template #default="scope">
-                            <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="teach_adv" label="教学建议" width="220"></el-table-column>
-
-                    <el-table-column prop="dis_int_contents" label="学科融合" @dblclick.stop>
-                        <template #default="scope">
-                            <el-select v-if="scope.row.dis_int_contents && scope.row.dis_int_contents.length > 0"
-                                v-model="selectedOption" @change="optionSelected(scope.row, $event)">
-                                <el-option v-for="content in scope.row.dis_int_contents" :key="content.dis_int_content_id"
-                                    :label="content.dis_int_name" :value="content.dis_int_content">
-                                </el-option>
-                                <el-option label="添加学科融合" value="add_subject_integration"></el-option>
-                            </el-select>
-                            <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)">添加学科融合</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-
-                <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
-                    <template #title>
-                        <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入融合标题" maxlength="15"
-                            type="text" show-word-limit></el-input>
-                        <template v-else>{{ dialogTitle }}</template>
+    <div class="centered-content">
+        <el-table :data="lessons" border stripe @cell-dblclick="openDialog">
+            <el-table-column prop="lesson_id" label="课程ID" width="80"></el-table-column>
+            <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
+            <el-table-column prop="author" label="作者" width="120"></el-table-column>
+            <el-table-column prop="teach_objectives" label="教学目标">
+                <template #default="scope">
+                        <span class="text-truncate-200">{{ scope.row.teach_objectives }}</span>
                     </template>
-                    <el-form>
-                        <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
-                    </el-form>
+            </el-table-column>
+            <el-table-column prop="lesson_focus" label="教学重点" width="180"></el-table-column>
+            <el-table-column prop="lesson_diff" label="教学难点" width="220"></el-table-column>
+            <el-table-column prop="lesson_ana" label="教材分析" width="220">
+                <template #default="scope">
+                    <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="teach_adv" label="教学建议" width="220"></el-table-column>
 
-                    <template v-slot:footer>
-                        <span class="dialog-footer">
-                            <el-button @click="dialogVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">确
-                                定</el-button>
-                        </span>
-                    </template>
-                </el-dialog>
+            <el-table-column prop="dis_int_contents" label="学科融合" @dblclick.stop>
+                <template #default="scope">
+                    <el-select v-if="scope.row.dis_int_contents && scope.row.dis_int_contents.length > 0"
+                        @change="optionSelected(scope.row, $event)"  
+                        :placeholder="`共有${scope.row.dis_int_contents.length}条融合知识`"
+                        >
 
-                <div style="margin: 10PX;">
-                    <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
-                        增加一课{{ selectedOptions }}
-                    </el-button>
-                </div>
-            </el-col>
-        </el-row>
+                        <el-option v-for="content in scope.row.dis_int_contents" :key="content.dis_int_content_id"
+                            :label="content.dis_int_name" :value="content.dis_int_content">
+                        </el-option>
+                        <el-option label="添加学科融合" value="add_subject_integration"></el-option>
+                    </el-select>
+                    <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)">添加学科融合</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
+            <template #header>
+                <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入融合标题" maxlength="15" type="text"
+                    show-word-limit></el-input>
+                <template v-else>{{ dialogTitle }}</template>
+            </template>
+            <el-form>
+                <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }" ></el-input>
+            </el-form>
+
+            <template v-slot:footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">
+                        确定更新</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        <div style="margin: 10PX;">
+            <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
+                增加一课{{ selectedOptions }}
+            </el-button>
+        </div>
+
     </div>
 </template>
 
 <style scoped>
-.button-container {
-    display: flex;
+.centered-content {
+    display: flex;             /* 设置元素为 flex 容器，使其子元素可以使用 flex 布局 */
+    justify-content: center;   /* 在主轴（水平轴）上居中 flex 容器内的所有子元素 */
+    align-items: center;       /* 在侧轴（垂直轴）上居中 flex 容器内的所有子元素 */
+    flex-direction: column;    /* 设置 flex 容器的主轴方向为垂直（列），子元素将沿垂直方向排列 */
+    height: 100%;              /* 设置元素高度为 100%，以使其占据父元素的全部高度 */
+    max-width: 1500px;
+    margin-left: auto;         /* 使容器在水平方向上居中：添加自动空白到左边距 */
+    margin-right: auto;        /* 使容器在水平方向上居中：添加自动空白到右边距 */
 }
+
+.listalllesson {
+    max-width: 900px;
+    margin: 0;
+    padding: 20px;
+}
+
 
 .text-truncate-200 {
     white-space: nowrap;
@@ -71,6 +89,9 @@
     max-width: 200px;
     display: block;
 }
+
+
+
 </style>
 
 
@@ -89,8 +110,8 @@ export default {
             selectedLesson: null,
             selectedColumnProperty: '',
             originalText: '',
-            currentdisintcontentid:"",
-            currentdisintname:""
+            currentdisintcontentid: "",
+            currentdisintname: ""
         };
     },
 
@@ -149,7 +170,8 @@ export default {
 
         addSubjectIntegration(row) {
             console.log('Adding subject integration for row:', row);
-            this.isSubjectIntegration = true;         
+            this.selectedLesson = row;
+            this.isSubjectIntegration = true;
             this.dialogVisible = true;
         },
         stop(event) {
@@ -168,6 +190,7 @@ export default {
                 }
                 else if (this.isSubjectIntegration === true) {
                     data = {
+                        lesson_id: this.selectedLesson.lesson_id,
                         dis_int_content_id: this.currentdisintcontentid, // 当前选中的融合的 ID
                         dis_int_name: this.currentdisintname,
                         newContent: this.textarea // 更新后的内容
@@ -179,8 +202,10 @@ export default {
                 // 请根据实际情况修改 URL 和其他请求参数
                 const response = await axios.put("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
                 if (response.status === 200) {
-                    this.dialogTitle="";
-                    this.textarea="";
+                    this.lessons_id = "";
+                    this.currentdisintcontentid = "";
+                    this.dialogTitle = "";
+                    this.textarea = "";
                     this.$message.success("更新成功！");
                     this.dialogVisible = false;
                 } else {
@@ -211,6 +236,9 @@ export default {
                 console.log(error);
             });
     },
+
+
+
 
 };
 </script>
