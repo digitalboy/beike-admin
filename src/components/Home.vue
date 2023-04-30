@@ -22,6 +22,9 @@
         <div>
             <el-button type="primary" @click="sendDataAndRedirect">开始编辑</el-button>
         </div>
+        <div style="padding-top: 20px;">
+            <el-button type="success" @click="theoriesRedirect">编辑教学理论</el-button>
+        </div>
     </div>
 </template>
 
@@ -62,35 +65,41 @@ export default {
                 const response = await axios.post(
                     "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/startedit",
                     { selectedOptions: this.selectedOptions }
-                );  
-                console.log(JSON.stringify(response.data, null, 2));       
+                );
+                console.log(JSON.stringify(response.data, null, 2));
                 // 页面跳转
                 this.$router.push({
                     path: '/ListLesson',
                     query: { selectedOptions: this.selectedOptions.join(',') }
-                });              
+                });
             } catch (error) {
                 console.error("Error submitting data:", error);
             }
+        },
+        async theoriesRedirect() {
+            this.$router.push({
+                path: '/ListTheory'             
+            });
+
         },
     },
 };
 </script>
 <style scoped>
 .group-wrapper {
-  position: relative;
-  border: 1px solid #ccc;
-  padding: 20px;
-  border-radius: 8px;
+    position: relative;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
 }
 
 .group-title {
-  position: absolute;
-  top: -9px;
-  left: 15px;
-  font-size: 14px;
-  background-color: #fff;
-  padding: 0 5px;
+    position: absolute;
+    top: -9px;
+    left: 15px;
+    font-size: 14px;
+    background-color: #fff;
+    padding: 0 5px;
 }
 
 .group-container {

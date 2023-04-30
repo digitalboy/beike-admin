@@ -4,6 +4,7 @@ import LoginComponent from '../components/Login.vue'
 import HomeComponent from '../components/Home.vue'
 import ListLesson from '../components/ListLesson.vue' // 添加引用
 import AddLesson from '../components/AddLesson.vue' // 添加处理
+import ListTheory from '../components/ListTheory.vue' // 添加处理
 
 const routes = [
     {
@@ -25,6 +26,11 @@ const routes = [
         path: '/AddLesson',
         name: 'AddLesson',
         component: AddLesson
+    },
+    {
+        path: '/ListTheory',
+        name: 'ListTheory',
+        component: ListTheory
     }
 
 ]
