@@ -26,13 +26,14 @@
           <!-- :v-model="`taginputmodel${scope.row.theory_id}`" -->
           <el-input
             v-if="tagInputVisible[scope.row.theory_id]"
-            :v-model="`taginputmodel[${scope.row.theory_id}]`"
+            v-model="taginputmodel[scope.row.theory_id]"
             ref="InputRef"
             class="ml-1 w-20"
             size="small"
             @keyup.enter="handleInputConfirm"
             @blur="handleInputConfirm"
           />
+
           <el-button
             v-else
             class="button-new-tag ml-1"
@@ -128,6 +129,7 @@
 <script>
 import axios from "axios";
 
+
 export default {
   name: "ListTheory",
   data() {
@@ -138,11 +140,11 @@ export default {
       dialogTitle: "",
       dynamicTags: [],
       tagInputVisible: [],
-      taginputmodel: [],
+      taginputmodel: {},
       // taginputmodel[3]: "",
     };
   },
-
+  
   methods: {
     openDialog(row, column, cell, event) {
       console.log("行：", row);
@@ -231,8 +233,9 @@ export default {
         this.theories = response.data;
         this.dynamicTags = response.data.theory_tags;
         console.log(this.theories.theory_id);
-        for(var i=0; i<this.theories.length;i++){
-            this.taginputmodel[i]="";
+        for (const theory of this.theories) {          
+          this.taginputmodel[theory.theory_id] = "";
+          console.log(this.taginputmodel);
         }
       })
       .catch((error) => {
