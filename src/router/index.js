@@ -5,35 +5,40 @@ import HomeComponent from '../components/Home.vue'
 import ListLesson from '../components/ListLesson.vue' // 添加引用
 import AddLesson from '../components/AddLesson.vue' // 添加处理
 import ListTheory from '../components/ListTheory.vue' // 添加处理
+import AddTheory from '../components/AddTheory.vue' // 添加处理
 
 const routes = [
-    {
-        path: '/',
-        name: 'Login',
-        component: LoginComponent
-    },
-    {
-        path: '/home',
-        name: 'Home',
-        component: HomeComponent
-    },
-    {
-        path: '/ListLesson',
-        name: 'ListLesson',
-        component: ListLesson
-    },
-    {
-        path: '/AddLesson',
-        name: 'AddLesson',
-        component: AddLesson
-    },
-    {
-        path: '/ListTheory',
-        name: 'ListTheory',
-        component: ListTheory
-    }
-
-]
+  {
+    path: "/",
+    name: "Login",
+    component: LoginComponent,
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: HomeComponent,
+  },
+  {
+    path: "/ListLesson",
+    name: "ListLesson",
+    component: ListLesson,
+  },
+  {
+    path: "/AddLesson",
+    name: "AddLesson",
+    component: AddLesson,
+  },
+  {
+    path: "/ListTheory",
+    name: "ListTheory",
+    component: ListTheory,
+  },
+  {
+    path: "/AddTheory",
+    name: "AddTheory",
+    component: AddTheory,
+  },
+];
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),

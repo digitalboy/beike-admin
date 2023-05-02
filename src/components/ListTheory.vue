@@ -45,7 +45,7 @@
 
       <template v-slot:footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button @click="closeDialog">取 消</el-button>
           <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">
             确定更新
           </el-button>
@@ -72,10 +72,7 @@
   height: 90%;
   /* 设置元素高度为 100%，以使其占据父元素的全部高度 */
   max-width: 1500px;
-  margin-left: auto;
-  /* 使容器在水平方向上居中：添加自动空白到左边距 */
-  margin-right: auto;
-  /* 使容器在水平方向上居中：添加自动空白到右边距 */
+  margin: 0 auto
 }
 
 .listalllesson {
@@ -95,93 +92,32 @@
 
 <script>
 import axios from "axios";
+import { ref, reactive, onMounted } from "vue";
+import { ElMessage } from "element-plus";
+import { useRouter} from 'vue-router';
 
 export default {
   name: "ListTheory",
-  data() {
-    return {
-      theories: [],
-      dialogVisible: false,
-      textarea: "",
-      dialogTitle: "",
-      dynamicTags: {},
-      tagInputVisible: [],
-      taginputmodel: [],
-      currentTheoryid: "",
-      currentTheoryColume: "",
-      currentTheryContent: "",
-      isSubjectIntegration: false,
-      originalText: "",
-    };
-  },
+  setup() {
+    const theories = ref([]);
+    const dialogVisible = ref(false);
+    const textarea = ref("");
+    const dialogTitle = ref("");
+    const dynamicTags = reactive({});
+    const tagInputVisible = reactive([]);
+    const taginputmodel = reactive([]);
+    const currentTheoryid = ref("");
+    const currentTheoryColume = ref("");
+    const currentTheoryContent = ref("");
+    const isSubjectIntegration = ref(false);
+    const originalText = ref("");
+    const router = useRouter();    
 
-  methods: {
-    openDialog(row, column, cell, event) {
-      if (column.property != "theory_tags") {
-        console.log("行：", row);
-        console.log("列：", column.prop);
-        console.log("格：", cell);
-        console.log(event.target.tagName);
-        // this.selectedLesson = row;
-        this.currentTheoryColume = column.property;
-        this.dialogTitle = "请编辑内容";
-        this.originalText = event.target.textContent;
-        this.textarea = event.target.textContent;
-        this.dialogVisible = true;
-      }
-    },
-
-    closeDialog() {
-      //console.log('保存的文本：', this.textarea);
-      this.dialogVisible = false;
-    },
-
-    async addTheory() {
-      this.$router.push({
-        path: "/AddTheory",
-        // query: { selectedOptions: this.selectedOptions.join(',') }
-      });
-    },
-
-    handleClose(alltags, tag, rowindex) {
-      console.log("tag", tag);
-      console.log("oldalltags:", alltags);
-      this.updateDatabase("deltag", rowindex, tag);
-      const index = alltags.findIndex((content) => content.tagname === tag);
-      console.log("删除：", index, alltags[index]);
-      alltags.splice(index, 1);
-      this.dynamicTags[rowindex] = alltags;
-      console.log("newalltags:", alltags);
-    },
-
-
-
-    showTagInput(index) {
-      console.log("index", index);
-      this.tagInputVisible[index] = true;
-      // this.InputRef.value?.input?.focus();
-    },
-
-    handleInputConfirm(rowindex) {
-      console.log("哪个文章ID:", rowindex);
-      // console.log(this.taginputmodel[index]);
-      if (this.taginputmodel[rowindex]) {
-        // console.log(this.taginputmodel[rowindex]);
-        // console.log(this.dynamicTags[rowindex]);
-        this.dynamicTags[rowindex].push({
-          tagname: this.taginputmodel[rowindex],
-        });
-        this.updateDatabase("addtag", rowindex, this.taginputmodel[rowindex]);
-      }
-      this.tagInputVisible[rowindex] = "";
-      this.taginputmodel[rowindex] = "";
-    },
-
-    async updateDatabase(dowhat, whichtheory, content) {
+    async function updateDatabase(dowhat, whichtheory, content) {
       let data = {};
-      console.log("要干啥：", dowhat)
+      console.log("要干啥：", dowhat);
       try {
-        if (dowhat === 'addtag') {
+        if (dowhat === "addtag") {
           console.log("要增加：", dowhat);
           data = {
             theoryaddtage: [
@@ -206,69 +142,139 @@ export default {
           data = {
             theoryupdate: [
               {
-                theory_id: this.currentTheoryid,
-                currentTheoryColume: this.currentTheoryColume,
-                newContent: this.textarea, // 更新后的内容
+                theory_id: currentTheoryid,
+                currentTheoryColume: currentTheoryColume,
+                newContent: textarea, // 更新后的内容
               },
             ],
-
           };
-
-
         }
 
-        console.log("DDDDDD:", data);
-        // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
-        // 请根据实际情况修改 URL 和其他请求参数
-        const response = await axios.put(
-          "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson",
-          data
-        );
+        // 发送数据到服务器
+        const response = await axios.post("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
+        console.log("服务器响应：", response);
         if (response.status === 200) {
-          this.dialogTitle = "";
-          this.textarea = "";
-          this.$message.success("更新成功！");
-          this.dialogVisible = false;
+          ElMessage.success("更新成功！");
+          dialogVisible.value = false;
+          await fetchData(); // 刷新表格数据
         } else {
-          this.$message.error("更新失败，请稍后重试！");
+          ElMessage.error("更新失败，请稍后重试！");
+        }
+
+      } catch (error) {
+        console.log("发生错误：", error);
+      }
+    }
+
+
+    async function addTheory() {
+      router.push({
+        path: "/AddTheory",
+        // query: { selectedOptions: this.selectedOptions.join(',') }
+      });
+    }
+
+    function handleClose(alltags, tag, rowindex) {
+      console.log("tag", tag);
+      console.log("oldalltags:", alltags);
+      updateDatabase("deltag", rowindex, tag);
+      const index = alltags.findIndex((content) => content.tagname === tag);
+      console.log("删除：", index, alltags[index]);
+      ElMessage.success("成功删除了一个标签");
+      alltags.splice(index, 1);
+      dynamicTags[rowindex] = alltags;
+      // console.log("newalltags:", alltags);
+    }
+
+    function showTagInput(index) {
+      console.log("index", index);
+      tagInputVisible[index] = true;
+      // this.InputRef.value?.input?.focus();
+    }
+
+    function handleInputConfirm(rowindex) {
+      console.log("哪个文章ID:", rowindex);
+      if (taginputmodel[rowindex]) {
+        dynamicTags[rowindex].push({
+          tagname: taginputmodel[rowindex],
+        });
+        updateDatabase("addtag", rowindex, taginputmodel[rowindex]);
+        ElMessage.success("成功添加了一个标签");
+      }
+      tagInputVisible[rowindex] = "";
+      taginputmodel[rowindex] = "";
+    }
+
+    function openDialog(row, column, cell, event) {
+      if (column.property != "theory_tags") {
+        console.log("行：", row);
+        console.log("列：", column.prop);
+        console.log("格：", cell);
+        console.log(event.target.tagName);
+
+        currentTheoryColume.value = column.property;
+        dialogTitle.value = "请编辑内容";
+        originalText.value = event.target.textContent;
+        textarea.value = event.target.textContent;
+        dialogVisible.value = true;
+      }
+    }
+
+    function closeDialog() {
+      dialogVisible.value = false;
+    }
+
+    onMounted(async () => {
+      console.clear();
+      console.log("start");
+      axios
+      await fetchData();
+    });
+
+    async function fetchData() {
+      try {
+        const response = await axios.get(
+          "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/get/listtheory"
+        );
+        ElMessage.success("得到了最新数据！");
+        theories.value = response.data;
+        for (const theory of theories.value) {
+          taginputmodel[theory.theory_id] = "";
+          dynamicTags[theory.theory_id] = theory.theory_tags;
         }
       } catch (error) {
         console.log(error);
-        this.$message.error("更新失败，请稍后重试！");
+        ElMessage.error("没有取得数据！");
       }
-    },
+    }
 
 
 
+    return {
+      theories,
+      dialogVisible,
+      textarea,
+      dialogTitle,
+      dynamicTags,
+      tagInputVisible,
+      taginputmodel,
+      currentTheoryid,
+      currentTheoryColume,
+      currentTheoryContent,
+      isSubjectIntegration,
+      originalText,
+      updateDatabase,
+      addTheory,
+      handleClose,
+      showTagInput,
+      handleInputConfirm,
+      openDialog,
+      closeDialog,
+    };
   },
-
-  mounted() {
-    console.clear();
-    console.log("start");
-    axios
-      // GET教学理论列表
-      .get(
-        "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/get/listtheory"
-      )
-      .then((response) => {
-        this.theories = response.data;
-        // this.dynamicTags = response.data.theory_tags;
-        console.log(this.theories.theory_id);
-        for (const theory of this.theories) {
-          this.taginputmodel[theory.theory_id] = "";
-          this.dynamicTags[theory.theory_id] = theory.theory_tags;
-          console.log("qqq:", theory.theory_tags);
-          console.log("kkk:", this.dynamicTags);
-          // console.log(this.taginputmodel);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        this.$message.error("没取得数据！");
-      });
-  },
-}
+};
 </script>
+
 
 
 

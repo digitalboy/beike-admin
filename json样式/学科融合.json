@@ -1,0 +1,32 @@
+[
+  {
+    "lesson_id": 2,
+    "dis_int_contents": [
+      {
+        "dis_int_content_id": 2,
+        "dis_int_name": "2简称",
+        "dis_int_content": "是个人"
+      },
+      {
+        "dis_int_content_id": 3,
+        "dis_int_name": "融合简称",
+        "dis_int_content": "郭沫若是个人"
+      }
+    ]
+  },
+  {
+    "lesson_id": 3,
+    "dis_int_contents": [
+      {
+        "dis_int_content_id": 5,
+        "dis_int_name": "2 融合",
+        "dis_int_content": "在实际应用中，JSON格式的正确性非常重要"
+      },
+      {
+        "dis_int_content_id": 10,
+        "dis_int_name": "JSON格式",
+        "dis_int_content": "如果JSON格式不正确，可能会导致数据解析错误，从而影响应用程序的功能和性能。"
+      }
+    ]
+  }
+]
