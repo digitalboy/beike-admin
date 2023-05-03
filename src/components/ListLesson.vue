@@ -9,9 +9,9 @@
                     <span class="text-truncate-200">{{ scope.row.teach_objectives }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="lesson_focus" label="教学重点" width="180"></el-table-column>
-            <el-table-column prop="lesson_diff" label="教学难点" width="220"></el-table-column>
-            <el-table-column prop="lesson_ana" label="教材分析" width="220">
+            <!-- <el-table-column prop="lesson_focus" label="教学重点" width="180"></el-table-column>
+            <el-table-column prop="lesson_diff" label="教学难点" width="220"></el-table-column> -->
+            <el-table-column prop="lesson_ana" label="教材解析" width="220">
                 <template #default="scope">
                     <span class="text-truncate-200">{{ scope.row.lesson_ana }}</span>
                 </template>
@@ -25,8 +25,10 @@
                         :placeholder="`共有${scope.row.dis_int_contents.length}条融合知识`">
 
                         <el-option v-for="content in scope.row.dis_int_contents" :key="content.dis_int_content_id"
-                            :label="content.dis_int_name" :value="content.dis_int_content">
+                            :value="content.dis_int_content">
+                            <span class="truncate">{{ content.dis_int_name }}</span>
                         </el-option>
+
                         <el-option label="添加学科融合" value="add_subject_integration"></el-option>
                     </el-select>
                     <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)">添加学科融合</el-button>
@@ -36,7 +38,7 @@
 
         <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
             <template #header>
-                <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入融合标题" maxlength="15" type="text"
+                <el-input v-if="isSubjectIntegration" v-model="dialogTitle" placeholder="请输入融合标题" maxlength="50" type="text"
                     show-word-limit></el-input>
                 <template v-else>{{ dialogTitle }}</template>
             </template>
@@ -59,10 +61,22 @@
             </el-button>
         </div>
 
+
+
     </div>
 </template>
 
 <style scoped>
+.truncate {
+    display: inline-block;
+    max-width: 250px;
+    /* 设置你想要的最大宽度 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
 .centered-content {
     display: flex;
     /* 设置元素为 flex 容器，使其子元素可以使用 flex 布局 */
@@ -148,6 +162,8 @@ export default {
         const closeDialog = () => {
             // Your closeDialog function logic here
             //console.log('保存的文本：', this.textarea);
+            textarea.value="";
+            dialogTitle.value="";
             isSubjectIntegration.value = false;
             dialogVisible.value = false;
         };
@@ -237,7 +253,7 @@ export default {
             selectedOptions.value = querySelectedOptions.value.split(','); // 使用响应式引用            
             // 打印选择的选项
             console.log(selectedOptions.value[0]);
-              axios
+            axios
                 .get("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/bgportlistlesson")
                 .then(async (response) => {
                     lessons.value = response.data;
@@ -270,10 +286,10 @@ export default {
                 } catch (error) {
                     console.log(error);
                     console.log(`获取 lesson_id 为 ${lesson.lesson_id} 的学科融合数据失败`);
+                    ElMessage.error("取得学科融合数据失败，请稍后重试！");
                 }
             }
         }
-
 
         return {
             lessons,
