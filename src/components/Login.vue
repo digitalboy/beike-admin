@@ -66,7 +66,8 @@ export default {
         const login = async () => {
             try {
                 const response = await axios.post(
-                    "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/beikeadminlogin",
+                    // "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/beikeadminlogin",
+                    "https://44.201.167.117:8009/api/user/login",
                     {
                         user_phone: form.value.phone,
                         user_pass: form.value.password,

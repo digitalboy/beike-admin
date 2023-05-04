@@ -1,0 +1,87 @@
+# 此工作流将构建新的容器映像并将其推送到 Amazon ECR，
+# ，然后在推送到“主”分支时将新的任务定义部署到 Amazon ECS。
+#
+# 要使用此工作流，您需要完成以下设置步骤：
+#
+# 1.创建 ECR 存储库来存储映像。
+# 例如：“aws ecr create-repository --repository-name my-ecr-repo --region us-east-2”。
+# 将以下工作流中“ECR_REPOSITORY”环境变量的值替换为存储库的名称。
+# 将以下工作流中“AWS_REGION”环境变量的值替换为存储库的区域。
+#
+# 2.创建弹性云服务器任务定义、弹性云服务器集群和弹性云服务器服务。
+# 例如，按照 ECS 控制台的入门指南进行操作：
+# https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
+# 将以下工作流中“ECS_SERVICE”环境变量的值替换为您为 Amazon ECS 服务设置的名称。
+# 将以下工作流中“ECS_CLUSTER”环境变量的值替换为您为集群设置的名称。
+#
+# 3.将 ECS 任务定义作为 JSON 文件存储在存储库中。
+# 格式应遵循“aws ecs register-task-definition --generate-cli-skeleton”的输出。
+# 将以下工作流中“ECS_TASK_DEFINITION”环境变量的值替换为 JSON 文件的路径。
+# 将下面工作流中 'CONTAINER_NAME' 环境变量的值替换为容器的名称
+# 在任务定义的“容器定义”部分中。
+#
+# 4.将 IAM 用户访问密钥存储在名为“AWS_ACCESS_KEY_ID”和“AWS_SECRET_ACCESS_KEY”的 GitHub 操作密钥中。
+# 请参阅下面使用的每个操作的文档，了解为此 IAM 用户推荐的 IAM 策略，
+# 以及处理访问密钥凭证的最佳实践。
+
+name: Deploy to Amazon EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1                         # 设置您的 AWS 区域，例如 us-west-1
+  INSTANCE_ID: i-02ec934f9959ff874              # 您的 AWS EC2 实例 ID
+  SSH_USERNAME: ec2-user                         # 您的 EC2 实例的 SSH 用户名
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # 存储在 GitHub Secrets 中的 SSH 私钥
+  APP_DIRECTORY: /beike-admin            # 您在 EC2 实例上的应用程序目录
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build VUE application
+      run: npm run build
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Copy files to EC2 instance
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.AWS_EC2_HOST }}
+        username: ${{ env.SSH_USERNAME }}
+        key: ${{ env.SSH_PRIVATE_KEY }}
+        source: "dist/"
+        target: ${{ env.APP_DIRECTORY }}
+
+    - name: Deploy to EC2 instance
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_EC2_HOST }}
+        username: ${{ env.SSH_USERNAME }}
+        key: ${{ env.SSH_PRIVATE_KEY }}
+        script: |
+          cd ${{ env.APP_DIRECTORY }}
+          
+      # 这里添加您的部署命令，例如重启服务器等操作
