@@ -56,7 +56,7 @@ jobs:
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.AWS_EC2_HOST }}
-        username: ${{ env.SSH_USERNAME }}
+        username: 44.201.167.117
         key: ${{ env.SSH_PRIVATE_KEY }}
         source: "dist/"
         target: ${{ env.APP_DIRECTORY }}
