@@ -1,4 +1,3 @@
-
 name: Deploy to Amazon EC2
 
 on:
@@ -50,6 +49,4 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add private_key
           ssh -o StrictHostKeyChecking=no -i private_key ec2-user@44.201.167.117 "mkdir -p /home/ec2-user/beike-admin"
-          scp -v -r -i private_key dist/ ec2-user@44.201.167.117:/home/ec2-user/beike-admin          
-
-
+          scp -v -r -i private_key ./ ec2-user@44.201.167.117:/home/ec2-user/beike-admin
