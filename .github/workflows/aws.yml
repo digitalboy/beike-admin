@@ -8,21 +8,7 @@
 # 将以下工作流中“ECR_REPOSITORY”环境变量的值替换为存储库的名称。
 # 将以下工作流中“AWS_REGION”环境变量的值替换为存储库的区域。
 #
-# 2.创建弹性云服务器任务定义、弹性云服务器集群和弹性云服务器服务。
-# 例如，按照 ECS 控制台的入门指南进行操作：
-# https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2#/firstRun
-# 将以下工作流中“ECS_SERVICE”环境变量的值替换为您为 Amazon ECS 服务设置的名称。
-# 将以下工作流中“ECS_CLUSTER”环境变量的值替换为您为集群设置的名称。
-#
-# 3.将 ECS 任务定义作为 JSON 文件存储在存储库中。
-# 格式应遵循“aws ecs register-task-definition --generate-cli-skeleton”的输出。
-# 将以下工作流中“ECS_TASK_DEFINITION”环境变量的值替换为 JSON 文件的路径。
-# 将下面工作流中 'CONTAINER_NAME' 环境变量的值替换为容器的名称
-# 在任务定义的“容器定义”部分中。
-#
-# 4.将 IAM 用户访问密钥存储在名为“AWS_ACCESS_KEY_ID”和“AWS_SECRET_ACCESS_KEY”的 GitHub 操作密钥中。
-# 请参阅下面使用的每个操作的文档，了解为此 IAM 用户推荐的 IAM 策略，
-# 以及处理访问密钥凭证的最佳实践。
+
 
 name: Deploy to Amazon EC2
 
