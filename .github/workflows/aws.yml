@@ -20,7 +20,7 @@ env:
   INSTANCE_ID: i-02ec934f9959ff874
   SSH_USERNAME: ec2-user
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  APP_DIRECTORY: /beike-admin
+  APP_DIRECTORY: /home/ec2-user/beike-admin
 
 permissions:
   contents: read
@@ -58,6 +58,6 @@ jobs:
           chmod 600 private_key
           eval "$(ssh-agent -s)"
           ssh-add private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@44.201.167.117 "uname -a"
+          ssh -o StrictHostKeyChecking=no -i private_key ec2-user@44.201.167.117 "mkdir -p /home/ec2-user/beike-admin"
           scp -r -i private_key dist/ ec2-user@44.201.167.117:${{ env.APP_DIRECTORY }}
 
