@@ -12,7 +12,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-checkbox v-model="form.rememberMe">记住我</el-checkbox>
-                    <a href="#" class="forgot-password-link">忘记密码？</a>
+                    <!-- <a href="#" class="forgot-password-link">忘记密码？</a> -->
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm">登录</el-button>
@@ -24,7 +24,7 @@
 
 <script>
 
-
+import apiConfig from '@/apicongfig/api.js';
 import { ref } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
@@ -33,14 +33,13 @@ import { useRouter } from "vue-router";
 export default {
     name: "LoginView",
     setup() {
+        const apiUrl = apiConfig
         const store = useStore();
         const router = useRouter();
-
         const loginForm = ref(null);
         const form = ref({
             phone: "",
             password: "",
-            rememberMe: false,
         });
 
         const rules = {
@@ -66,14 +65,13 @@ export default {
         const login = async () => {
             try {
                 const response = await axios.post(
-                    // "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/beikeadminlogin",
-                    "https://44.201.167.117:8009/api/user/login",
+                    apiUrl.loginUrl,
                     {
                         user_phone: form.value.phone,
                         user_pass: form.value.password,
                     }
                 );
-                // console.log("发送了：", form.value.phone);
+                console.log("发送了：", form.value.phone);
                 // console.log(response.data.code);
                 if (response.data.code === 200) {
                     console.log("API返回数据：", response.data);
@@ -83,16 +81,16 @@ export default {
                     await router.isReady();
                     router.push("/home");
                 } else {
-                    alert("您没有权限登录，请联系我们。");
+                    alert("密码错了或电话错了或者没有注册。");
                 }
             } catch (error) {
-                console.error("登录失败：", error);
-                alert("登录失败，请稍后重试！");
+                alert("远程服务器正在休息！");
             }
         };
 
         const submitForm = () => {
             loginForm.value.validate(async (valid) => {
+                console.log("qqq")
                 if (valid) {
                     await login();
                 } else {
