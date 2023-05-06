@@ -1,8 +1,6 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   transpileDependencies: true,
-  module.exports = {
-  publicPath: './'
-}
+  publicPath: "./", // 这一行修改了路径
   outputDir: "dist",
-})
+});
