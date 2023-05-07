@@ -1,40 +1,38 @@
 <template>
     <div class="lesson-container">
-        
-        <div class="lesson-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            
-                <div class="input-group">
-                    <el-text class="label">年级</el-text>
-                    <el-input v-model="gradeinput" class="lesson-input" :placeholder="selectedOptions[1]" disabled
-                        />
-                </div>
-                <div class="input-group">
-                    <el-text class="label">科目</el-text>
-                    <el-input v-model="subjectinput" class="lesson-input" :placeholder="selectedOptions[0]" disabled
-                        />
-                </div>
-                <div class="input-group">
-                    <el-text class="label">单元</el-text>
-                    <el-select v-model="selectedUnit" placeholder="选择单元">
-                        <el-option v-for="unit in units" :key="unit.unit_id" :label="unit.unit_name"
-                            :value="unit.unit_id"></el-option>
-                    </el-select>
-                </div>
-                <div class="input-group">
-                    <el-text class="label">课文标题</el-text>
-                    <el-input v-model="lessontitleinput" class="lesson-input" placeholder="请输入课文标题"
-                        :formatter="(value) => `《${value}》`" :parser="(value) => value.replace(/《|》/g, '')" />
 
-                </div>
-                <div class="input-group">
-                    <el-text class="label">作者</el-text>
-                    <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" />
-                </div>
-           
+        <div class="lesson-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+
+            <div class="input-group">
+                <el-text class="label">年级</el-text>
+                <el-input v-model="gradeinput" class="lesson-input" :placeholder="currentGradeName" disabled />
+            </div>
+            <div class="input-group">
+                <el-text class="label">科目</el-text>
+                <el-input v-model="subjectinput" class="lesson-input" :placeholder="currentSubjectName" disabled />
+            </div>
+            <div class="input-group">
+                <el-text class="label">单元</el-text>
+                <el-select v-model="selectedUnit" placeholder="选择单元">
+                    <el-option v-for="unit in unitList" :key="unit.unit_id" :label="unit.unit_name"
+                        :value="unit.unit_id"></el-option>
+                </el-select>
+            </div>
+            <div class="input-group">
+                <el-text class="label">课文标题</el-text>
+                <el-input v-model="lessontitleinput" class="lesson-input" placeholder="请输入课文标题"
+                    :formatter="(value) => `《${value}》`" :parser="(value) => value.replace(/《|》/g, '')" />
+
+            </div>
+            <div class="input-group">
+                <el-text class="label">作者</el-text>
+                <el-input v-model="authorinput" class="lesson-input" placeholder="请输入作者名" />
+            </div>
+
         </div>
         <div class="lesson-content">
             <div class="input-group">
-                  
+
                 <el-text class="label">课文正文</el-text>
                 <el-input v-model="lessonText" :autosize="{ minRows: 5, maxRows: 20 }" class="lesson-textarea"
                     type="textarea" placeholder="请输入课文正文"></el-input>
@@ -64,8 +62,9 @@
                         </div>
                     </template>
                     <div>
-                        
-                        <el-input v-model="dis_int_nameinput1" placeholder="学科融合的标题" style="padding-bottom: 10px" maxlength="15"/>
+
+                        <el-input v-model="dis_int_nameinput1" placeholder="学科融合的标题" style="padding-bottom: 10px"
+                            maxlength="15" />
                         <el-input v-model="dis_int_contenttextarea1" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
                             placeholder="Please input" style="width: 100%" />
                     </div>
@@ -76,7 +75,8 @@
                             <span>添加学科融合</span>
                         </div>
                     </template>
-                    <el-input v-model="dis_int_nameinput2" placeholder="学科融合的标题"  style="padding-bottom: 10px" maxlength="15"/>
+                    <el-input v-model="dis_int_nameinput2" placeholder="学科融合的标题" style="padding-bottom: 10px"
+                        maxlength="15" />
                     <el-input v-model="dis_int_contenttextarea2" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
                         placeholder="Please input" />
                 </el-card>
@@ -86,7 +86,8 @@
                             <span>添加学科融合</span>
                         </div>
                     </template>
-                    <el-input v-model="dis_int_nameinput3" placeholder="学科融合的标题"  style="padding-bottom: 10px" maxlength="15"/>
+                    <el-input v-model="dis_int_nameinput3" placeholder="学科融合的标题" style="padding-bottom: 10px"
+                        maxlength="15" />
                     <el-input v-model="dis_int_contenttextarea3" :autosize="{ minRows: 9, maxRows: 10 }" type="textarea"
                         placeholder="Please input" />
                 </el-card>
@@ -138,132 +139,175 @@
 
 
 <script>
-import axios from "axios";
+import apiConfig from "@/apicongfig/api.js";
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import { useRoute } from "vue-router";
 
 export default {
-    name: "AddLesson",
-    data() {
-        return {
-            input: "",
-            selectedOptions: [],
-            units: [],
-            selectedUnit: null,
-            lessonText: "",
-            analysisText: "",
-            targetText: "",
-            suggestionText: "",
-            lessontitleinput: "",
-            authorinput: "",
-            gradeinput: "",
-            subjectinput: "",
-            dis_int_nameinput1:"",
-            dis_int_nameinput2: "",
-            dis_int_nameinput3: "",
-            dis_int_contenttextarea1:"",
-            dis_int_contenttextarea2: "",
-            dis_int_contenttextarea3: "",
-            dis_int_contents:[],
+    name: 'AddLesson',
+    setup() {
+        const input = ref('');
+        const selectedOptions = ref([]);
+        const unitList = ref([]);
+        const selectedUnit = ref(null);
+        const lessonText = ref('');
+        const analysisText = ref('');
+        const targetText = ref('');
+        const suggestionText = ref('');
+        const lessontitleinput = ref('');
+        const authorinput = ref('');
+        const gradeinput = ref('');
+        const subjectinput = ref('');
+        const dis_int_nameinput1 = ref('');
+        const dis_int_nameinput2 = ref('');
+        const dis_int_nameinput3 = ref('');
+        const dis_int_contenttextarea1 = ref('');
+        const dis_int_contenttextarea2 = ref('');
+        const dis_int_contenttextarea3 = ref('');
+        const dis_int_contents = ref([]);
+        const route = useRoute();
+
+        const currentUnitid = ref('');
+        const currentUnitName = ref('');
+        const currentGradeId = ref('');
+        const currentGradeName = ref('');
+        const currentSubjectId = ref('');
+        const currentSubjectName = ref('');
+
+        onMounted(async () => {
             
-            // spaceSize: "20"
-        };
-    },
-    mounted() {
-        // 获取选项字符串并分割为一个数组
-        const optionsString = this.$route.query.selectedOptions;
-        this.selectedOptions = optionsString.split(',');
+            // console.log("拿到参数：",route.query);
 
+            currentUnitid.value = route.query.unit_id; 
+            currentUnitName.value = route.query.unit_name;
+            currentGradeId.value = route.query.grade_id,
+            currentGradeName.value = route.query.grade_name;
+            currentSubjectId.value = route.query.subject_id;
+            currentSubjectName.value = route.query.subject_name;
+            
+           
+            try {
+                const response = await axios.get(
+                apiConfig.unitListUrl,
+                    { params: { 
+                        pub_id: 1,
+                        subject_id: currentSubjectId.value,
+                        grade_id: currentGradeId.value
+                    } }
+                );
+                unitList.value = response.data;
+                console.log("单元表：", unitList.value)
+            } catch (error) {
+                console.error('Error fetching units:', error);
+                alert("拿不到单元数据");
+            }
+        });
 
-        // 打印选择的选项
-        console.log(this.selectedOptions[0]);
-
-    },
-    async created() {
-        try {
-            const response = await axios.get(
-                "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/getunit" //拿到单元表格
-            );
-            this.units = response.data;
-        } catch (error) {
-            console.error("Error fetching units:", error);
-        }
-    },
-    methods: {
-        async submitLesson() {
+        const submitLesson = async () => {
             // 检查课程标题、作者和单元是否存在
-            if (!this.lessontitleinput || !this.authorinput || !this.selectedUnit) {
-                this.$message.error("课程标题、作者和单元不能为空");
+            if (!lessontitleinput.value || !authorinput.value || !selectedUnit.value) {
+                this.$message.error('课程标题、作者和单元不能为空');
                 return;
             }
 
-             // 构建学科融合数据
-            const dis_int_contents = [
+            // 构建学科融合数据
+            dis_int_contents.value = [
                 {
-                    dis_int_name: this.dis_int_nameinput1,
-                    dis_int_content: this.dis_int_contenttextarea1
+                    dis_int_name: dis_int_nameinput1.value,
+                    dis_int_content: dis_int_contenttextarea1.value,
                 },
                 {
-                    dis_int_name: this.dis_int_nameinput2,
-                    dis_int_content: this.dis_int_contenttextarea2
+                    dis_int_name: dis_int_nameinput2.value,
+                    dis_int_content: dis_int_contenttextarea2.value,
                 },
                 {
-                    dis_int_name: this.dis_int_nameinput3,
-                    dis_int_content: this.dis_int_contenttextarea3
-                }
+                    dis_int_name: dis_int_nameinput3.value,
+                    dis_int_content: dis_int_contenttextarea3.value,
+                },
             ];
 
             // 构建要发送的数据对象
             const lessonData = {
-                grade: this.gradeinput,
-                subject: this.subjectinput,
-                unit_id: this.selectedUnit,
-                title: this.lessontitleinput,
-                author: this.authorinput,
-                content: this.lessonText,
-                analysis: this.analysisText,
-                target: this.targetText,
-                suggestion: this.suggestionText,
-                dis_int_contents: dis_int_contents
+                grade: gradeinput.value,
+                subject: subjectinput.value,
+                unit_id: selectedUnit.value,
+                title: lessontitleinput.value,
+                author: authorinput.value,
+                content: lessonText.value,
+                analysis: analysisText.value,
+                target: targetText.value,
+                suggestion: suggestionText.value,
+                dis_int_contents: dis_int_contents.value,
             };
 
             try {
                 const response = await axios.post(
-                    "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/addlesson",
+                    'https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/addlesson',
                     lessonData
                 );
-                console.log(response)
+                console.log(response);
 
                 // 检查响应状态是否成功
                 if (response.data.success) {
-                    this.$message.success("课程已成功提交");
+                    this.$message.success('课程已成功提交');
                     // 重置表单数据
-                    this.resetForm();
+                    resetForm();
                 } else {
-                    this.$message.error("提交失败，请重试");
+                    this.$message.error('提交失败，请重试');
                 }
             } catch (error) {
-                console.error("提交课程数据时出错:", error);
-                this.$message.error("提交失败，请重试");
+                console.error('提交课程数据时出错:', error);
+                this.$message.error('提交失败，请重试');
             }
-        },
-        resetForm() {
-            this.selectedUnit = null;
-            this.lessonText = "";
-            this.analysisText = "";
-            this.targetText = "";
-            this.suggestionText = "";
-            this.lessontitleinput = "";
-            this.authorinput = "";
-        }
-    },
-    computed: {
-        submitButtonText() {
-            const unit = this.units.find(u => u.unit_id === this.selectedUnit);
+        };
+
+        const resetForm = () => {
+            selectedUnit.value = null;
+            lessonText.value = '';
+            analysisText.value = '';
+            targetText.value = '';
+            suggestionText.value = '';
+            lessontitleinput.value = '';
+            authorinput.value = '';
+        };
+
+        const submitButtonText = computed(() => {
+            const unit = unitList.value.find((u) => u.unit_id === selectedUnit.value);
             const unitName = unit ? unit.unit_name : '';
-            return `提交${this.subjectinput} ${this.gradeinput} ${unitName} ${this.lessontitleinput}`;
-        }
-    }
+            return `提交${subjectinput.value} ${gradeinput.value} ${unitName} ${lessontitleinput.value}`;
+        });
 
-}
+        return {
+            input,
+            selectedOptions,
+            unitList,
+            selectedUnit,
+            lessonText,
+            analysisText,
+            targetText,
+            suggestionText,
+            lessontitleinput,
+            authorinput,
+            gradeinput,
+            subjectinput,
+            dis_int_nameinput1,
+            dis_int_nameinput2,
+            dis_int_nameinput3,
+            dis_int_contenttextarea1,
+            dis_int_contenttextarea2,
+            dis_int_contenttextarea3,
+            dis_int_contents,
+            submitLesson,
+            resetForm,
+            submitButtonText,
 
-
+            currentUnitName,
+            currentGradeId,
+            currentGradeName,
+            currentSubjectId,
+            currentSubjectName,
+        };
+    },
+};
 </script>

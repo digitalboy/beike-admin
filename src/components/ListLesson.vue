@@ -1,6 +1,8 @@
 <template>
     <div class="centered-content">
 
+        <el-text class="mx-1" type="primary">正在编辑：{{ currentSubjectName }}-{{ currentGradeName }}-{{ currentUnitName }}</el-text>
+       
         <el-table :data="lessons" border stripe @cell-dblclick="openDialog">
             <!-- <el-table-column prop="lesson_id" label="课程ID" width="80"></el-table-column> -->
             <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
@@ -48,7 +50,7 @@
                 </template>
             </el-table-column>
         </el-table>
-
+        
 
 
         <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
@@ -71,12 +73,10 @@
         </el-dialog>
 
         <div style="margin: 10PX;">
-            <el-button type="primary" v-if="selectedOptions.length > 0" @click="addLesson">
-                增加一课{{ selectedOptions.values }}
+            <el-button type="primary"  @click="addLesson">
+                增加一课-{{ currentGradeName}}
             </el-button>
         </div>
-
-
 
     </div>
 </template>
@@ -95,21 +95,26 @@ export default {
     setup() {
         const loading = ref(false);
         const lessons = ref([]);
-        const lessons_id = ref('');
+        const lessonsId = ref('');
         const dialogVisible = ref(false);
         const textarea = ref('');
         const dialogTitle = ref('');
-        const selectedOptions = ref([]);
         const isSubjectIntegration = ref(false);
         const selectedLesson = ref(null);
         const selectedColumnProperty = ref('');
         const originalText = ref('');
-        const currentdisintcontentid = ref('');
-        const currentdisintname = ref('');
+        const currentDisintcontentid = ref('');
+        const currentDisintname = ref('');
         const router = useRouter();
         const route = useRoute(); // 导入 useRoute 并添加此行
-        const whichapiurl = ref('');
-        const getunit_id = ref('');
+        const whichApiUrl = ref('');
+        
+        const currentUnitid = ref('');
+        const currentUnitName = ref('');
+        const currentGradeId = ref('');
+        const currentGradeName = ref('');
+        const currentSubjectId = ref('');
+        const currentSubjectName = ref('');
 
         const openDialog = (row, column, cell, event) => {
             // Your openDialog function logic here
@@ -140,10 +145,17 @@ export default {
         };
 
         const addLesson = async () => {
-            // Your addLesson function logic here
+            console.log("给参数：", currentUnitid.value)
             router.push({
                 path: '/AddLesson',
-                query: { selectedOptions: selectedOptions.value.join(',') }
+                query: { 
+                    unit_id: currentUnitid.value,
+                    unit_name: currentUnitName.value,                 
+                    grade_id: currentGradeId.value,
+                    grade_name: currentGradeName.value,
+                    subject_id: currentSubjectId.value,
+                    subject_name: currentSubjectName.value
+                }
             });
         };
 
@@ -159,8 +171,8 @@ export default {
                 const selectedContent = row.dis_int_contents.find(content => content.dis_int_content === value);
                 // 获取 dis_int_name 属性
                 dialogTitle.value = selectedContent.dis_int_name;
-                currentdisintcontentid.value = selectedContent.dis_int_content_id;
-                currentdisintname.value = selectedContent.dis_int_name;
+                currentDisintcontentid.value = selectedContent.dis_int_content_id;
+                currentDisintname.value = selectedContent.dis_int_name;
                 textarea.value = value;
                 dialogVisible.value = true;
             }
@@ -200,24 +212,24 @@ export default {
                         teach_adv: selectedLesson.value.teach_adv,
                         author: selectedLesson.value.author
                     }
-                    whichapiurl.value = apiConfig.lessonUpdateUrl; // 更新课程的URL          
+                    whichApiUrl.value = apiConfig.lessonUpdateUrl; // 更新课程的URL          
                     // 更新所选属性的值
                     data[selectedColumnProperty.value] = textarea.value;
                 }
                 else if (isSubjectIntegration.value === true) {
-                    console.log("当前融合ID", currentdisintcontentid.value);
+                    console.log("当前融合ID", currentDisintcontentid.value);
                     console.log("当前课程ID", selectedLesson.value.lesson_id);
-                    if (currentdisintcontentid.value) {
-                        whichapiurl.value = apiConfig.disIntUpdateUrl; //更新学科融合
+                    if (currentDisintcontentid.value) {
+                        whichApiUrl.value = apiConfig.disIntUpdateUrl; //更新学科融合
                         data = {
-                            dis_int_content_id: currentdisintcontentid.value, // 当前选中的融合的 ID
+                            dis_int_content_id: currentDisintcontentid.value, // 当前选中的融合的 ID
                             lesson_id: selectedLesson.value.lesson_id,
                             dis_int_name: dialogTitle.value,
                             dis_int_content: textarea.value,
 
                         }
                     } else {
-                        whichapiurl.value = apiConfig.disIntAddUrl; //添加学科融合
+                        whichApiUrl.value = apiConfig.disIntAddUrl; //添加学科融合
                         data = {
                             lesson_id: selectedLesson.value.lesson_id,
                             dis_int_name: dialogTitle.value,
@@ -233,17 +245,17 @@ export default {
                 }
 
                 console.log("更新了啥：", data);
-                console.log("URLLLL：", whichapiurl.value);
+                console.log("URLLLL：", whichApiUrl.value);
                 // 发送 PUT 请求（或其他适合更新操作的 HTTP 方法）到后端
                 // 请根据实际情况修改 URL 和其他请求参数
                 const response = await axios({
                     method: method,
-                    url: whichapiurl.value,
+                    url: whichApiUrl.value,
                     data: data
                 });
                 if (response.status === 200) {
-                    lessons_id.value = "";
-                    currentdisintcontentid.value = "";
+                    lessonsId.value = "";
+                    currentDisintcontentid.value = "";
                     dialogTitle.value = "";
                     textarea.value = "";
                     ElMessage.success("更新成功！");
@@ -259,13 +271,19 @@ export default {
 
         onMounted(async () => {
             console.clear();
-            getunit_id.value = route.query.unit_id; // 更改为 route.query.unit_id
-            console.log("拿到了单元ID：", getunit_id.value);
+            currentUnitid.value = route.query.unit_id; // 更改为 route.query.unit_id
+            currentUnitName.value = route.query.unit_name;
+            currentGradeId.value = route.query.grade_id,
+            currentGradeName.value = route.query.grade_name;
+            currentSubjectId.value = route.query.subject_id;
+            currentSubjectName.value = route.query.subject_name;
+
+            console.log("拿到了单元ID：", currentUnitid.value);
             loading.value = true; // 显示加载指示器
             axios.get(
                 // console.log(getunit_id.value),
                 apiConfig.lessonListUrl,
-                { params: { unit_id: getunit_id.value } } // 将 unit_id 作为参数传递给请求
+                { params: { unit_id: currentUnitid.value } } // 将 unit_id 作为参数传递给请求
             )
                 .then(async (response) => {
                     lessons.value = response.data;
@@ -315,20 +333,25 @@ export default {
             dialogVisible,
             textarea,
             dialogTitle,
-            selectedOptions,
             isSubjectIntegration,
             selectedLesson,
             selectedColumnProperty,
             originalText,
-            currentdisintcontentid,
-            currentdisintname,
+            currentdisintcontentid: currentDisintcontentid,
+            currentdisintname: currentDisintname,
             openDialog,
             closeDialog,
             addLesson,
             optionSelected,
             addSubjectIntegration,
             stop,
-            updateDatabase
+            updateDatabase,
+
+            currentUnitName,
+            currentGradeId,
+            currentGradeName,
+            currentSubjectId,
+            currentSubjectName,
         };
     },
 };

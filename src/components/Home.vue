@@ -142,17 +142,30 @@ export default defineComponent({
         return;
       }
 
-      // 获取所选单元的 label 属性
-      const selectedUnitLabel = radioGroups.value[2].options.find(
+      // 获取所选单元、年级和学科的 label 属性和文本
+      const selectedUnit = radioGroups.value[2].options.find(
         (option) => option.label === selectedOptions.value[2]
-      ).label;
+      );
+      const selectedGrade = radioGroups.value[1].options.find(
+        (option) => option.label === selectedOptions.value[1]
+      );
+      const selectedSubject = radioGroups.value[0].options.find(
+        (option) => option.label === selectedOptions.value[0]
+      );
 
-      try {       
+      try {
         // console.log(JSON.stringify(response.data, null, 2));
-       console.log("选中的单元 ID：", selectedUnitLabel);
+        console.log("选中的单元 ID：", selectedUnit.label);
         router.push({
           path: '/ListLesson',
-          query: { unit_id: selectedUnitLabel },          
+          query: {
+            unit_id: selectedUnit.label,
+            unit_name: selectedUnit.text,
+            grade_id: selectedGrade.label,
+            grade_name: selectedGrade.text,
+            subject_id: selectedSubject.label,
+            subject_name: selectedSubject.text
+          },
         });
       } catch (error) {
         console.error("Error submitting data:", error);
