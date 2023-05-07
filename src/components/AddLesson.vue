@@ -143,6 +143,7 @@ import apiConfig from "@/apicongfig/api.js";
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from "vue-router";
+import { ElMessage } from "element-plus";
 
 export default {
     name: 'AddLesson',
@@ -207,7 +208,7 @@ export default {
         const submitLesson = async () => {
             // 检查课程标题、作者和单元是否存在
             if (!lessontitleinput.value || !authorinput.value || !selectedUnit.value) {
-                this.$message.error('课程标题、作者和单元不能为空');
+                ElMessage.error('课程标题、作者和单元不能为空');
                 return;
             }
 
@@ -229,37 +230,43 @@ export default {
 
             // 构建要发送的数据对象
             const lessonData = {
-                grade: gradeinput.value,
+                
+                lesson_name: lessontitleinput.value,
+                lesson_code: "",
+                memo:"",
                 subject: subjectinput.value,
                 unit_id: selectedUnit.value,
-                title: lessontitleinput.value,
-                author: authorinput.value,
-                content: lessonText.value,
-                analysis: analysisText.value,
-                target: targetText.value,
-                suggestion: suggestionText.value,
-                dis_int_contents: dis_int_contents.value,
+                teach_objectivest: targetText.value,
+                lesson_text: lessonText.value,
+                lesson_focus:"",
+                lesson_diff:"",
+                lesson_ana: analysisText.value,
+                teach_adv: suggestionText.value,
+                author: authorinput.value,          
+                
+                // dis_int_contents: dis_int_contents.value,
+                    
             };
 
-            try {
-                const response = await axios.post(
-                    'https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/addlesson',
-                    lessonData
-                );
+           try {
+                const response = await axios.post(apiConfig.lessonAddUrl, lessonData);
                 console.log(response);
 
                 // 检查响应状态是否成功
-                if (response.data.success) {
-                    this.$message.success('课程已成功提交');
+                if (response.status === 200 && response.data.lesson_id) {
+                    ElMessage.success('课程已成功提交');
                     // 重置表单数据
                     resetForm();
                 } else {
-                    this.$message.error('提交失败，请重试');
+                    ElMessage.error(
+                        response.data.message || '提交失败，请重试'
+                    );
                 }
             } catch (error) {
                 console.error('提交课程数据时出错:', error);
-                this.$message.error('提交失败，请重试');
+                ElMessage.error('提交失败，请重试');
             }
+
         };
 
         const resetForm = () => {

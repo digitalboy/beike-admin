@@ -1,8 +1,12 @@
 export default {
   loginUrl: "http://120.26.11.239:8009/api/user/login",
+
   subjectListUrl: "http://120.26.11.239:8009/api/subject/list",
+
   lessonListUrl: "http://120.26.11.239:8009/api/lesson/list",
   lessonUpdateUrl: "http://120.26.11.239:8009/api/lesson/update",
+  lessonAddUrl: "http://120.26.11.239:8009/api/lesson/new",
+
   gradeListUrl: "http://120.26.11.239:8009/api/grade/list",
   //   gradeUpdateUrl: "http://120.26.11.239:8009/api/grade/update",
   unitListUrl: "http://120.26.11.239:8009/api/unit/list",
