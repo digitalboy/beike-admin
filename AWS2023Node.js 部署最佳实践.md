@@ -1,9 +1,10 @@
 # AWS linux 2023
 
 前提：
-
+你是个前端开发人员，你用 Node.js 和 VUE 开发了一些APP。
 已经建立好了 AWS Linux2023 实例，开通了所有端口（可以后期调整）。
 下载好了 PEM 私钥文件，并妥善保存。更好的办法是 GitHub Actions，自动部署。以后再讲。
+AWS 是自己的改的 Linux，安全性较高，Nginx 的权限无法访问你的 dist。
 
 ## 通过 SSH 进入实例
 
