@@ -1,8 +1,8 @@
 <template>
     <div class="centered-content">
 
-        <el-text class="mx-1" type="primary">正在编辑：{{ currentSubjectName }}-{{ currentGradeName }}-{{ currentUnitName }}</el-text>
-       
+        <el-text size="large" tag="b" class="mx-1" type="primary">正在编辑：{{ currentSubjectName }}-{{ currentGradeName }}-{{ currentUnitName }}</el-text>
+       <div style="margin: 20px;"></div>
         <el-table :data="lessons" border stripe @cell-dblclick="openDialog">
             <!-- <el-table-column prop="lesson_id" label="课程ID" width="80"></el-table-column> -->
             <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
