@@ -103,9 +103,11 @@ export default {
     const dialogVisible = ref(false);
     const textarea = ref("");
     const dialogTitle = ref("");
+
     const dynamicTags = reactive({});
     const tagInputVisible = reactive([]);
     const taginputmodel = reactive([]);
+    
     const currentTheoryid = ref("");
     const currentTheoryColume = ref("");
     const currentTheoryContent = ref("");

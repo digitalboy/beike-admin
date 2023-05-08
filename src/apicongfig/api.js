@@ -1,24 +1,22 @@
+const serverIp = "http://server.beike.ai";
+
 export default {
-  loginUrl: "http://120.26.11.239:8009/api/user/login",
-
-  subjectListUrl: "http://120.26.11.239:8009/api/subject/list",
-
-  lessonListUrl: "http://120.26.11.239:8009/api/lesson/list",
-  lessonUpdateUrl: "http://120.26.11.239:8009/api/lesson/update",
-  lessonAddUrl: "http://120.26.11.239:8009/api/lesson/new",
-
-  gradeListUrl: "http://120.26.11.239:8009/api/grade/list",
-  //   gradeUpdateUrl: "http://120.26.11.239:8009/api/grade/update",
-  unitListUrl: "http://120.26.11.239:8009/api/unit/list",
-  //   unitUpdateUrl: "http://120.26.11.239:8009/api/unit/update",
-
-  disIntListUrl: "http://120.26.11.239:8009/api/dis_int/list?lesson_id=2",
-  disIntUpdateUrl: "http://120.26.11.239:8009/api/dis_int/update",
-  disIntAddUrl: "http://120.26.11.239:8009/api/dis_int/new",
-  disIntDelUrl: "http://0000000000000:8009/api/dis_int/delete",
-
-  theoryListUrl: "http://120.26.11.239:8009/api/theory/list",
-  theoryUpdateUrl: "http://120.26.11.239:8009/api/theory/update",
-  //   tagListUrl: "https://example.com/api",
-  //   tagUpdateUrl: "https://example.com/api",
+  loginUrl: `${serverIp}:8009/api/user/login`,
+  subjectListUrl: `${serverIp}:8009/api/subject/list`,
+  lessonListUrl: `${serverIp}:8009/api/lesson/list`,
+  lessonUpdateUrl: `${serverIp}:8009/api/lesson/update`,
+  lessonAddUrl: `${serverIp}:8009/api/lesson/new`,
+  gradeListUrl: `${serverIp}:8009/api/grade/list`,
+  gradeUpdateUrl: `${serverIp}:8009/api/grade/update`,
+  unitListUrl: `${serverIp}:8009/api/unit/list`,
+  unitUpdateUrl: `${serverIp}:8009/api/unit/update`,
+  disIntListUrl: `${serverIp}:8009/api/dis_int/list?lesson_id=2`,
+  disIntUpdateUrl: `${serverIp}:8009/api/dis_int/update`,
+  disIntAddUrl: `${serverIp}:8009/api/dis_int/new`,
+  disIntDelUrl: `${serverIp}:8009/api/dis_int/delete`,
+  theoryListUrl: `${serverIp}:8009/api/theory/list`,
+  theoryUpdateUrl: `${serverIp}:8009/api/theory/update`,
+  theoryAddUrl: `${serverIp}:8009/api/theory/new`,
+  theoryDelUrl: `${serverIp}:8009/api/theory/delete`,
+  tagListUrl: `${serverIp}:8009/api/theory/list`,
 };

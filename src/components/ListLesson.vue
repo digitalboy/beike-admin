@@ -1,7 +1,7 @@
 <template>
     <div class="centered-content">
 
-        <el-text size="large" tag="b" class="mx-1" type="primary">正在编辑：{{ currentSubjectName }}-{{ currentGradeName }}-{{ currentUnitName }}</el-text>
+        <el-text size="large" tag="b" class="mx-1" type="primary">双击可以编辑：{{ currentSubjectName }}-{{ currentGradeName }}-{{ currentUnitName }}</el-text>
        <div style="margin: 20px;"></div>
         <el-table :data="lessons" border stripe @cell-dblclick="openDialog">
             <!-- <el-table-column prop="lesson_id" label="课程ID" width="80"></el-table-column> -->
@@ -84,7 +84,6 @@
 
 <script>
 import apiConfig from "@/apicongfig/api.js";
-
 import axios from "@/apicongfig/tokencheck.js";
 import { ref, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
@@ -192,6 +191,7 @@ export default {
         };
 
         const updateDatabase = async () => {
+            ElMessage.warning("正在更新数据，稍等");
             let method = 'put'; // 默认使用 PUT 方法
             // Your updateDatabase function logic here
             let data = {};
@@ -260,6 +260,7 @@ export default {
                     textarea.value = "";
                     ElMessage.success("更新成功！");
                     dialogVisible.value = false;
+                    await refreshData(); // 刷新数据
                 } else {
                     ElMessage.error("更新失败，请稍后重试！");
                 }
@@ -269,7 +270,29 @@ export default {
             }
         };
 
+        const refreshData = async () => {
+            loading.value = true;
+            try {
+                const response = await axios.get(apiConfig.lessonListUrl, {
+                    params: { unit_id: currentUnitid.value },
+                });
+                if (response.status === 200) {
+                    lessons.value = response.data;
+                    await fetchDisIntContents();
+                    ElMessage.success('数据已刷新');
+                } else {
+                    ElMessage.error('刷新数据失败，请稍后重试');
+                }
+            } catch (error) {
+                console.log(error);
+                ElMessage.error('刷新数据失败，请稍后重试');
+            }
+            loading.value = false;
+        };
+
+
         onMounted(async () => {
+            ElMessage.warning("正在获取数据，稍等");
             console.clear();
             currentUnitid.value = route.query.unit_id; // 更改为 route.query.unit_id
             currentUnitName.value = route.query.unit_name;

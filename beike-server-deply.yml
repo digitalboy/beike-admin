@@ -1,0 +1,25 @@
+name: Deploy beike-server docker to AWS EC2 via SSH
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to EC2
+      env:
+        PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY}}
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem        
+        scp -i private_key.pem -o StrictHostKeyChecking=no -r . ec2-user@ec2-34-203-244-187.compute-1.amazonaws.com:/home/ec2-user/beike-server
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@ec2-34-203-244-187.compute-1.amazonaws.com "cd /home/ec2-user/beike-server && docker-compose build && docker-compose up -d"

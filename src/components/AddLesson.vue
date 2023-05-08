@@ -1,6 +1,8 @@
 <template>
     <div class="lesson-container">
 
+        <el-text size="large" tag="b" class="mx-1" type="primary">添加一课，记得选择单元。</el-text>
+
         <div class="lesson-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
 
             <div class="input-group">
@@ -140,8 +142,9 @@
 
 <script>
 import apiConfig from "@/apicongfig/api.js";
+import axios from "@/apicongfig/tokencheck.js";
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+
 import { useRoute } from "vue-router";
 import { ElMessage } from "element-plus";
 
@@ -205,7 +208,7 @@ export default {
             }
         });
 
-        const submitLesson = async () => {
+        const addLesson = async () => {
             // 检查课程标题、作者和单元是否存在
             if (!lessontitleinput.value || !authorinput.value || !selectedUnit.value) {
                 ElMessage.error('课程标题、作者和单元不能为空');
@@ -305,7 +308,7 @@ export default {
             dis_int_contenttextarea2,
             dis_int_contenttextarea3,
             dis_int_contents,
-            submitLesson,
+            addLesson,
             resetForm,
             submitButtonText,
 
