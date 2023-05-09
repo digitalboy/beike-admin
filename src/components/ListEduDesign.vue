@@ -162,8 +162,8 @@ export default {
                             edu_des_name: dialogTitle.value,
                             edu_des_content: textarea.value,
                         }
-                    }  else {
-                         console.log("tianjia ID:")
+                    } else {
+                        console.log("tianjia ID:")
                         whichApiUrl.value = apiConfig.eduDesAddUrl; //添加课程设计
                         method = 'post';
                         data = {
@@ -203,6 +203,7 @@ export default {
                 const response = await axios.get(apiConfig.lessonListUrl, {
                     params: { unit_id: currentUnitid.value },
                 });
+
                 if (response.status === 200) {
                     lessons.value = response.data;
                     await fetchEduDesContents();
@@ -213,65 +214,76 @@ export default {
             } catch (error) {
                 console.log(error);
                 ElMessage.error('刷新数据失败，请稍后重试');
+            } finally {
+                loading.value = false;
             }
-            loading.value = false;
         };
+
 
 
         onMounted(async () => {
             ElMessage.warning("正在获取课程数据，稍等");
             console.clear();
-            currentUnitid.value = route.query.unit_id; // 更改为 route.query.unit_id
+            currentUnitid.value = route.query.unit_id;
             currentUnitName.value = route.query.unit_name;
-            currentGradeId.value = route.query.grade_id,
+            currentGradeId.value = route.query.grade_id;
             currentGradeName.value = route.query.grade_name;
             currentSubjectId.value = route.query.subject_id;
             currentSubjectName.value = route.query.subject_name;
 
             console.log("拿到了单元ID：", currentUnitid.value);
-            loading.value = true; // 显示加载指示器
-            axios.get(
-                // console.log(getunit_id.value),
-                apiConfig.lessonListUrl,
-                { params: { unit_id: currentUnitid.value } } // 将 unit_id 作为参数传递给请求
-            )
-                .then(async (response) => {
+            loading.value = true;
+
+            try {
+                const response = await axios.get(
+                    apiConfig.lessonListUrl, {
+                    params: { unit_id: currentUnitid.value },
+                });
+
+                if (response.status === 200) {
                     lessons.value = response.data;
                     await fetchEduDesContents();
                     ElMessage.success("取得数据：成功！");
-                })
-                .catch((error) => {
-                    console.log(error);
+                } else {
                     ElMessage.error("取得数据失败，请稍后重试！");
-                });
+                }
+            } catch (error) {
+                console.log(error);
+                ElMessage.error("取得数据失败，请稍后重试！");
+            } finally {
+                loading.value = false;
+            }
         });
 
 
-        async function fetchEduDesContents() {
-            for (const eduDesJson of lessons.value) {
-                // console.log("课程设计的课程ID", lesson.lesson_id)
-                try {
-                    const response = await axios.get(
-                        apiConfig.eduDesListURl,
-                        { params: { lesson_id: eduDesJson.lesson_id } });
 
-                    if (response.status === 200 && response.data && response.data.length > 0) {
-                        
-                        const oneEduDesData = response.data.filter(data => data.lesson_id === eduDesJson.lesson_id);
-                        console.log("oneEduDesData:", oneEduDesData);
-                        if (oneEduDesData) {                            
-                            eduDesJson.eduDesContents = oneEduDesData;
-                            console.log("课程设计chazhao:", eduDesJson.eduDesContents)
-                        }
-                    } else {
-                        console.log(``);
-                    }
-                } catch (error) {
-                    console.log(error);                    
-                    ElMessage.error("取得课程设计数据失败，请稍后重试！");
+        async function getEduDesignData(lessonId) {
+            try {
+                const response = await axios.get(apiConfig.eduDesListURl, { params: { lesson_id: lessonId } });
+
+                if (response.status === 200 && response.data && response.data.length > 0) {
+                    return response.data;
+                } else {
+                    console.log(`No education design data found for lessonId: ${lessonId}`);
+                    return [];
+                }
+            } catch (error) {
+                console.log(error);
+                ElMessage.error("获取课程设计数据失败，请稍后重试！");
+                return [];
+            }
+        }
+
+        async function fetchEduDesContents() {
+            for (const lesson of lessons.value) {
+                const eduDesData = await getEduDesignData(lesson.lesson_id);
+                if (eduDesData.length > 0) {
+                    lesson.eduDesContents = eduDesData;
+                    console.log("课程设计查找:", lesson.eduDesContents);
                 }
             }
         }
+
 
 
         return {
