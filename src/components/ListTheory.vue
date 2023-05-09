@@ -1,31 +1,27 @@
 <template>
   <div class="centered-content">
     <el-table :data="theories" border stripe @cell-dblclick="openDialog">
-      <!-- <el-table-column
-        prop="theory_id"
-        label="理论ID"
-        width="80"
-      ></el-table-column> -->
       <el-table-column prop="theory_content" label="理论内容" width="500">
         <template #default="scope">
           <span class="text-truncate-200">{{ scope.row.theory_content }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="author" label="作者/出处" width="200"></el-table-column>
-      <el-table-column prop="theory_tags" label="标签管理">
+      <el-table-column prop="tags" label="标签管理">
         <template #default="scope">
-          <el-tag v-for="content in dynamicTags[scope.row.theory_id]" :key="content.tagname" class="mx-1" closable @close="handleClose(
-              dynamicTags[scope.row.theory_id],
-              content.tagname,
-              scope.row.theory_id
-            )
+
+          <el-tag v-for="content in dynamicTags[scope.row.theory_id]" :key="content.tagname" class="mx-1" closable @close="handleClose(dynamicTags[scope.row.theory_id],
+            content.tagname,
+            scope.row.theory_id,
+            scope.row
+          )
             ">
             {{ content.tagname }}
           </el-tag>
-          <!-- :v-model="`taginputmodel${scope.row.theory_id}`" -->
+
+
           <el-input v-if="tagInputVisible[scope.row.theory_id]" v-model="taginputmodel[scope.row.theory_id]"
             ref="InputRef" class="ml-1 w-20" size="small" @keyup.enter="handleInputConfirm(scope.row.theory_id)" />
-
           <el-button v-else class="button-new-tag ml-1" size="small" @click="showTagInput(scope.row.theory_id)">
             + New Tag
           </el-button>
@@ -46,7 +42,8 @@
       <template v-slot:footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="updateDatabase" :disabled="textarea === originalText">
+          <el-button type="primary" @click="updateDatabase('update', currentTheoryid.value, textarea.value)"
+            :disabled="textarea === originalText">
             确定更新
           </el-button>
         </span>
@@ -59,42 +56,13 @@
   </div>
 </template>
 
-<style scoped>
-.centered-content {
-  display: flex;
-  /* 设置元素为 flex 容器，使其子元素可以使用 flex 布局 */
-  justify-content: center;
-  /* 在主轴（水平轴）上居中 flex 容器内的所有子元素 */
-  align-items: center;
-  /* 在侧轴（垂直轴）上居中 flex 容器内的所有子元素 */
-  flex-direction: column;
-  /* 设置 flex 容器的主轴方向为垂直（列），子元素将沿垂直方向排列 */
-  height: 90%;
-  /* 设置元素高度为 100%，以使其占据父元素的全部高度 */
-  max-width: 1500px;
-  margin: 0 auto
-}
-
-.listalllesson {
-  max-width: 900px;
-  margin: 0;
-  padding: 20px;
-}
-
-.text-truncate-200 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 500px;
-  display: block;
-}
-</style>
 
 <script>
-import axios from "axios";
+import apiConfig from "@/apicongfig/api.js";
+import axios from "@/apicongfig/tokencheck.js";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
-import { useRouter} from 'vue-router';
+import { useRouter } from 'vue-router';
 
 export default {
   name: "ListTheory",
@@ -107,53 +75,28 @@ export default {
     const dynamicTags = reactive({});
     const tagInputVisible = reactive([]);
     const taginputmodel = reactive([]);
-    
     const currentTheoryid = ref("");
     const currentTheoryColume = ref("");
     const currentTheoryContent = ref("");
+    const currentAuthor = ref("");
     const isSubjectIntegration = ref(false);
     const originalText = ref("");
-    const router = useRouter();    
+    const router = useRouter();
 
-    async function updateDatabase(dowhat, whichtheory, content) {
-      let data = {};
+    async function updateDatabase(dowhat, whichtheory) {
+      let data = {
+        theory_id: whichtheory,
+        theory_content: currentTheoryColume.value === 'theory_content' ? textarea.value : currentTheoryContent.value,
+        author: currentTheoryColume.value === 'author' ? textarea.value : currentAuthor.value,
+        tags: dynamicTags[whichtheory].map(tag => ({ tagname: tag.tagname })),
+      };
+
       console.log("要干啥：", dowhat);
-      try {
-        if (dowhat === "addtag") {
-          console.log("要增加：", dowhat);
-          data = {
-            theoryaddtage: [
-              {
-                theory_id: whichtheory,
-                tagname: content,
-              },
-            ],
-          };
-          console.log("add");
-        } else if (dowhat === "deltag") {
-          console.log("delllllll");
-          data = {
-            theorydeltage: [
-              {
-                theory_id: whichtheory,
-                tagname: content,
-              },
-            ],
-          };
-        } else {
-          data = {
-            theoryupdate: [
-              {
-                theory_id: currentTheoryid,
-                currentTheoryColume: currentTheoryColume,
-                newContent: textarea, // 更新后的内容
-              },
-            ],
-          };
-        }
+      console.log("发送了啥：", JSON.stringify(data, null, 2));
 
-        // 发送数据到服务器
-        const response = await axios.post("https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/put/updatebeikelesson", data);
+      try {
+        // 发送数据到服务器       
+        const response = await axios.put(apiConfig.theoryUpdateUrl, data);
         console.log("服务器响应：", response);
         if (response.status === 200) {
           ElMessage.success("更新成功！");
@@ -162,36 +105,35 @@ export default {
         } else {
           ElMessage.error("更新失败，请稍后重试！");
         }
-
       } catch (error) {
         console.log("发生错误：", error);
       }
+
     }
 
 
     async function addTheory() {
       router.push({
         path: "/AddTheory",
-        // query: { selectedOptions: this.selectedOptions.join(',') }
       });
     }
 
-    function handleClose(alltags, tag, rowindex) {
-      console.log("tag", tag);
-      console.log("oldalltags:", alltags);
-      updateDatabase("deltag", rowindex, tag);
+    function handleClose(alltags, tag, rowindex, rowData) {
       const index = alltags.findIndex((content) => content.tagname === tag);
       console.log("删除：", index, alltags[index]);
       ElMessage.success("成功删除了一个标签");
       alltags.splice(index, 1);
       dynamicTags[rowindex] = alltags;
-      // console.log("newalltags:", alltags);
+      currentTheoryContent.value = rowData.theory_content;
+      currentAuthor.value = rowData.author;
+      updateDatabase("updateTags", rowindex);
     }
+
+
 
     function showTagInput(index) {
       console.log("index", index);
       tagInputVisible[index] = true;
-      // this.InputRef.value?.input?.focus();
     }
 
     function handleInputConfirm(rowindex) {
@@ -200,7 +142,7 @@ export default {
         dynamicTags[rowindex].push({
           tagname: taginputmodel[rowindex],
         });
-        updateDatabase("addtag", rowindex, taginputmodel[rowindex]);
+        updateDatabase("updateTags", rowindex);
         ElMessage.success("成功添加了一个标签");
       }
       tagInputVisible[rowindex] = "";
@@ -208,12 +150,13 @@ export default {
     }
 
     function openDialog(row, column, cell, event) {
-      if (column.property != "theory_tags") {
+      if (column.property != "tags") {
         console.log("行：", row);
         console.log("列：", column.prop);
         console.log("格：", cell);
         console.log(event.target.tagName);
 
+        currentTheoryid.value = row.theory_id;
         currentTheoryColume.value = column.property;
         dialogTitle.value = "请编辑内容";
         originalText.value = event.target.textContent;
@@ -236,21 +179,19 @@ export default {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://www.fastmock.site/mock/049d5f213afce41edfa6e5176afccd3c/adminlogin/v1/get/listtheory"
+          apiConfig.theoryListUrl
         );
         ElMessage.success("得到了最新数据！");
         theories.value = response.data;
         for (const theory of theories.value) {
           taginputmodel[theory.theory_id] = "";
-          dynamicTags[theory.theory_id] = theory.theory_tags;
+          dynamicTags[theory.theory_id] = theory.tags;
         }
       } catch (error) {
         console.log(error);
         ElMessage.error("没有取得数据！");
       }
     }
-
-
 
     return {
       theories,
@@ -278,6 +219,33 @@ export default {
 </script>
 
 
+
+
+<style scoped>
+.centered-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 90%;
+  max-width: 1500px;
+  margin: 0 auto
+}
+
+.listalllesson {
+  max-width: 900px;
+  margin: 0;
+  padding: 20px;
+}
+
+.text-truncate-200 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+  display: block;
+}
+</style>
 
 
 
