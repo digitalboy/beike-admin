@@ -29,8 +29,6 @@
 
         </el-table>
 
-
-
         <el-dialog :title="dialogTitle" v-model="dialogVisible" width="70%" draggable @close="closeDialog">
             <template #header>
                 <el-input v-if="isEduDes" v-model="dialogTitle" placeholder="请输入教学设计标题" maxlength="50" type="text"
