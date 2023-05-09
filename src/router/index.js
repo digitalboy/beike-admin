@@ -6,6 +6,7 @@ import ListLesson from '../components/ListLesson.vue' // 添加引用
 import AddLesson from '../components/AddLesson.vue' // 添加处理
 import ListTheory from '../components/ListTheory.vue' // 添加处理
 import AddTheory from '../components/AddTheory.vue' // 添加处理
+import ListEduDesign from '../components/ListEduDesign.vue' // 添加处理
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: "/AddTheory",
     name: "AddTheory",
     component: AddTheory,
+  },
+  {
+    path: "/ListEduDesign",
+    name: "ListEduDesign",
+    component: ListEduDesign,
   },
 ];
 

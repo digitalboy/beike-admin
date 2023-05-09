@@ -49,6 +49,7 @@
                     <el-button v-else type="primary" @click="addSubjectIntegration(scope.row)">添加学科融合</el-button>
                 </template>
             </el-table-column>
+
         </el-table>
         
 

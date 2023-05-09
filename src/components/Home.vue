@@ -152,12 +152,30 @@ export default defineComponent({
       const selectedSubject = radioGroups.value[0].options.find(
         (option) => option.label === selectedOptions.value[0]
       );
+      const selectedContent = radioGroups.value[3].options.find(
+        (option) => option.label === selectedOptions.value[3]
+      );
 
       try {
-        // console.log(JSON.stringify(response.data, null, 2));
         console.log("选中的单元 ID：", selectedUnit.label);
+        let targetPath = "";
+
+        switch (selectedContent.label) {
+          case "lessontext":
+            targetPath = "/ListLesson";
+            break;
+          case "lessondesing":
+            targetPath = "/ListEduDesign";
+            break;
+          case "lessonppt":
+            targetPath = "/PPTPage";
+            break;
+          default:
+            break;
+        }
+
         router.push({
-          path: '/ListLesson',
+          path: targetPath,
           query: {
             unit_id: selectedUnit.label,
             unit_name: selectedUnit.text,
@@ -171,6 +189,8 @@ export default defineComponent({
         console.error("Error submitting data:", error);
       }
     };
+
+    
 
     const theoriesRedirect = async () => {
       router.push({
