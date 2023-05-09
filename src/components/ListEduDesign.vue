@@ -6,7 +6,7 @@
         <div style="margin: 20px;"></div>
         <el-table :data="lessons" border stripe>
             <!-- <el-table-column prop="lesson_id" label="课程ID" width="80"></el-table-column> -->
-            <el-table-column prop="lesson_name" label="课程名称" width="120"></el-table-column>
+            <el-table-column prop="lesson_name" label="课程名称" width="250"></el-table-column>
 
 
             <el-table-column prop="eduDesContents" label="教学设计" @dblclick.stop>
@@ -313,3 +313,47 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.truncate {
+    display: inline-block;
+    max-width: 250px;
+    /* 设置你想要的最大宽度 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.centered-content {
+    display: flex;
+    /* 设置元素为 flex 容器，使其子元素可以使用 flex 布局 */
+    justify-content: center;
+    /* 在主轴（水平轴）上居中 flex 容器内的所有子元素 */
+    align-items: center;
+    /* 在侧轴（垂直轴）上居中 flex 容器内的所有子元素 */
+    flex-direction: column;
+    /* 设置 flex 容器的主轴方向为垂直（列），子元素将沿垂直方向排列 */
+    height: 100%;
+    /* 设置元素高度为 100%，以使其占据父元素的全部高度 */
+    max-width: 1000px;
+    margin-left: auto;
+    /* 使容器在水平方向上居中：添加自动空白到左边距 */
+    margin-right: auto;
+    /* 使容器在水平方向上居中：添加自动空白到右边距 */
+}
+
+.listalllesson {
+    max-width: 900px;
+    margin: 0;
+    padding: 20px;
+}
+
+.text-truncate-200 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: block;
+}
+</style>
