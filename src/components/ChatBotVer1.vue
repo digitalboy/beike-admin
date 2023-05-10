@@ -1,5 +1,5 @@
 <template>
-    <div class="home" id="homepage">
+    <div>
         <el-row type="flex" justify="center">
             <el-col :span="24" :sm="24" :md="18" :lg="16" :xl="24">
                 <div class="group-container">
@@ -96,23 +96,22 @@
         </el-row>
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="currentItem.title" width="50%">
-        <template #header>
-            <el-input v-model="dialogTitle" :placeholder="currentItem.title" maxlength="100" type="text"
-                show-word-limit></el-input>
-        </template>
+    <el-dialog v-model="dialogVisible" title="请编辑内容" width="70%">
 
+        <el-input v-model="dialogTitle" :placeholder="currentItem.title" maxlength="100" type="text"
+            show-word-limit></el-input>
+        <div style="margin: 20px;" />
         <el-input v-model="editContent" type="textarea" :autosize="{ minRows: 5, maxRows: 30 }"
             :placeholder="currentItem.content"></el-input>
+        <div style="margin: 20px;" />
+        <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            
+            <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content">
+                确定更新
+            </el-button>
+        </span>
 
-        <template v-slot:footer>
-            <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content">
-                    确定更新
-                </el-button>
-            </span>
-        </template>
     </el-dialog>
 </template>
 
@@ -191,6 +190,7 @@ export default defineComponent({
             currentItem.content = content;
             currentItem.group = group;
             currentItem.lesson_id = lesson_id;
+            editContent.value = content;
             dialogVisible.value = true;
         };
 
@@ -228,6 +228,12 @@ export default defineComponent({
                 const response = await axios.put(apiURL, data);
                 // Handle success
                 console.log(response);
+                if (currentItem.group === "disInt") {
+                    await fetchDisIntContents(selectedLessons.value);
+                } else if (currentItem.group === "eduDes") {
+                    await fetchEduDesContents(selectedLessons.value);
+                }
+                dialogVisible.value = false;
                 dialogVisible.value = false;
             } catch (error) {
                 // Handle error
@@ -251,7 +257,9 @@ export default defineComponent({
             currentItem,
             showDialog,
             randomDelay,
-            updateDatabase
+            updateDatabase,
+            fetchDisIntContents,
+            fetchEduDesContents,
         };
     },
 });
