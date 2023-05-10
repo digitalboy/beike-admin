@@ -14,7 +14,7 @@ export default {
   unitListUrl: `${serverIp}:8009/api/unit/list`,
   unitUpdateUrl: `${serverIp}:8009/api/unit/update`,
 
-  disIntListUrl: `${serverIp}:8009/api/dis_int/list?lesson_id=2`,
+  disIntListUrl: `${serverIp}:8009/api/dis_int/list`,
   disIntUpdateUrl: `${serverIp}:8009/api/dis_int/update`,
   disIntAddUrl: `${serverIp}:8009/api/dis_int/new`,
   disIntDelUrl: `${serverIp}:8009/api/dis_int/delete`,
