@@ -72,6 +72,7 @@ export default {
         const originalText = ref('');
         const currentEduDesId = ref('');
         const currentEduDesName = ref('');
+        const eduDesContents = ref([]);
 
         const route = useRoute(); // 导入 useRoute 并添加此行
         const whichApiUrl = ref('');
@@ -280,6 +281,7 @@ export default {
                     console.log("课程设计查找:", lesson.eduDesContents);
                 }
             }
+            eduDesContents.value = lessons.value.flatMap(lesson => lesson.eduDesContents);
         }
 
 
