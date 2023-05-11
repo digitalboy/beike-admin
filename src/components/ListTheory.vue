@@ -200,6 +200,7 @@ export default {
       console.log("start");
       axios
       await fetchData();
+      ElMessage.warning("正在获取数据……")
     });
 
     async function fetchData() {
