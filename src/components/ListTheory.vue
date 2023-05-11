@@ -209,7 +209,7 @@ export default {
           apiConfig.theoryListUrl
         );
         ElMessage.success("得到了最新数据！");
-        theories.value = response.data;
+        theories.value = response.data.reverse();//倒序
         for (const theory of theories.value) {
           tagInputModel[theory.theory_id] = "";
           dynamicTags[theory.theory_id] = theory.tags;
