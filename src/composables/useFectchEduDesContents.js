@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import axios from "@/apicongfig/tokencheck.js";
 import apiConfig from "@/apicongfig/api.js";
+import { ElMessage } from "element-plus";
 
 // 修改 useFetchEduDesContents 函数
 export default function useFetchEduDesContents() {
@@ -24,11 +25,12 @@ export default function useFetchEduDesContents() {
 
       const results = await Promise.all(requests);
       eduDesContents.value = results.flat();
-      console.log(results);
-      console.log(eduDesContents.value);
+      ElMessage.success("获取学科融合成功");
     } catch (error) {
       console.error("An error occurred while fetching eduDesContents:", error);
       eduDesContents.value = [];
+      ElMessage.error("获取学科融合失败");
+      return;    
     }
   };
 

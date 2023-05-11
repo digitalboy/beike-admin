@@ -20,7 +20,7 @@
           </el-tag>
 
 
-          <el-input v-if="tagInputVisible[scope.row.theory_id]" v-model="taginputmodel[scope.row.theory_id]"
+          <el-input v-if="tagInputVisible[scope.row.theory_id]" v-model="tagInputModel[scope.row.theory_id]"
             ref="InputRef" class="ml-1 w-20" size="small" @keyup.enter="handleInputConfirm(scope.row.theory_id)" />
           <el-button v-else class="button-new-tag ml-1" size="small" @click="showTagInput(scope.row.theory_id)">
             + New Tag
@@ -42,7 +42,7 @@
       <template v-slot:footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="updateDatabase('update', currentTheoryid.value, textarea.value)"
+          <el-button type="primary" @click="updateDatabase(currentTheory.id)"
             :disabled="textarea === originalText">
             确定更新
           </el-button>
@@ -66,6 +66,7 @@ import { useRouter } from 'vue-router';
 
 export default {
   name: "ListTheory",
+
   setup() {
     const theories = ref([]);
     const dialogVisible = ref(false);
@@ -74,24 +75,36 @@ export default {
 
     const dynamicTags = reactive({});
     const tagInputVisible = reactive([]);
-    const taginputmodel = reactive([]);
-    const currentTheoryid = ref("");
-    const currentTheoryColume = ref("");
-    const currentTheoryContent = ref("");
-    const currentAuthor = ref("");
+    const tagInputModel = reactive([]);
+    const currentTheory = reactive({
+      id: "",
+      column: "",
+      content: "",
+      author: ""
+    });
     const isSubjectIntegration = ref(false);
     const originalText = ref("");
     const router = useRouter();
 
-    async function updateDatabase(dowhat, whichtheory) {
-      let data = {
-        theory_id: whichtheory,
-        theory_content: currentTheoryColume.value === 'theory_content' ? textarea.value : currentTheoryContent.value,
-        author: currentTheoryColume.value === 'author' ? textarea.value : currentAuthor.value,
-        tags: dynamicTags[whichtheory].map(tag => ({ tagname: tag.tagname })),
+    // const currentTheoryid = ref("");
+    // const currentTheoryColume = ref("");
+
+   async function updateDatabase(theoryId, rowData = null) {
+      const data = {
+        theory_id: theoryId,
+        theory_content: rowData ? rowData.theory_content : currentTheory.content,
+        author: rowData ? rowData.author : currentTheory.author,
+        tags: dynamicTags[theoryId].map(tag => ({ tagname: tag.tagname })),
       };
 
-      console.log("要干啥：", dowhat);
+      // 根据 currentTheory.column 更新对应的值
+      if (currentTheory.column === 'theory_content') {
+        data.theory_content = textarea.value;
+      } else if (currentTheory.column === 'author') {
+        data.author = textarea.value;
+      }
+
+
       console.log("发送了啥：", JSON.stringify(data, null, 2));
 
       try {
@@ -111,53 +124,62 @@ export default {
 
     }
 
-
     async function addTheory() {
       router.push({
         path: "/AddTheory",
       });
     }
 
-    function handleClose(alltags, tag, rowindex, rowData) {
+    function handleClose(alltags, tag, rowIndex, rowData) {
       const index = alltags.findIndex((content) => content.tagname === tag);
       console.log("删除：", index, alltags[index]);
       ElMessage.success("成功删除了一个标签");
       alltags.splice(index, 1);
-      dynamicTags[rowindex] = alltags;
-      currentTheoryContent.value = rowData.theory_content;
-      currentAuthor.value = rowData.author;
-      updateDatabase("updateTags", rowindex);
+
+      dynamicTags[rowIndex] = alltags;
+
+      currentTheory.content = rowData.theory_content;
+      currentTheory.author = rowData.author;
+      currentTheory.column = ''; // 清除 currentTheory.column 的值
+
+      updateDatabase(rowIndex, rowData);
     }
-
-
 
     function showTagInput(index) {
       console.log("index", index);
       tagInputVisible[index] = true;
     }
 
-    function handleInputConfirm(rowindex) {
-      console.log("哪个文章ID:", rowindex);
-      if (taginputmodel[rowindex]) {
-        dynamicTags[rowindex].push({
-          tagname: taginputmodel[rowindex],
+    function handleInputConfirm(rowIndex) {
+      if (tagInputModel[rowIndex]) {
+        dynamicTags[rowIndex].push({
+          tagname: tagInputModel[rowIndex],
         });
-        updateDatabase("updateTags", rowindex);
+        const rowData = theories.value.find(theory => theory.theory_id === rowIndex);
+        currentTheory.content = rowData.theory_content;
+        currentTheory.author = rowData.author;
+        currentTheory.column = ''; // 清除 currentTheory.column 的值
+        updateDatabase(rowIndex);
         ElMessage.success("成功添加了一个标签");
       }
-      tagInputVisible[rowindex] = "";
-      taginputmodel[rowindex] = "";
+      tagInputVisible[rowIndex] = false;
+      tagInputModel[rowIndex] = "";
     }
+
 
     function openDialog(row, column, cell, event) {
       if (column.property != "tags") {
         console.log("行：", row);
-        console.log("列：", column.prop);
+        console.log("列：", column.property);
         console.log("格：", cell);
         console.log(event.target.tagName);
 
-        currentTheoryid.value = row.theory_id;
-        currentTheoryColume.value = column.property;
+        currentTheory.id = row.theory_id;
+        currentTheory.column = column.property;
+        currentTheory.content = row.theory_content;
+        currentTheory.author = row.author;
+
+        
         dialogTitle.value = "请编辑内容";
         originalText.value = event.target.textContent;
         textarea.value = event.target.textContent;
@@ -184,7 +206,7 @@ export default {
         ElMessage.success("得到了最新数据！");
         theories.value = response.data;
         for (const theory of theories.value) {
-          taginputmodel[theory.theory_id] = "";
+          tagInputModel[theory.theory_id] = "";
           dynamicTags[theory.theory_id] = theory.tags;
         }
       } catch (error) {
@@ -200,12 +222,12 @@ export default {
       dialogTitle,
       dynamicTags,
       tagInputVisible,
-      taginputmodel,
-      currentTheoryid,
-      currentTheoryColume,
-      currentTheoryContent,
+      tagInputModel,
+      currentTheory,
       isSubjectIntegration,
       originalText,
+      // currentTheoryid,
+      // currentTheoryColume,
       updateDatabase,
       addTheory,
       handleClose,

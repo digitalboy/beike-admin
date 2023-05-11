@@ -1,8 +1,10 @@
 import { ref } from "vue";
 import axios from "@/apicongfig/tokencheck.js";
 import apiConfig from "@/apicongfig/api.js";
+import { ElMessage } from "element-plus";
 
 export default function useFetchData() {
+  ElMessage.success("正在获取基础数据！");
   const radioGroups = ref([
     {
       id: "subjects",
@@ -29,8 +31,10 @@ export default function useFetchData() {
         text: subject.subject_name,
       }));
       console.log("取得学科：", response.data);
+      ElMessage.success("获取学科成功！");
     } catch (error) {
       console.error("Error fetching subjects:", error);
+      ElMessage.error("获取学科失败！");
     }
   };
 
@@ -41,13 +45,16 @@ export default function useFetchData() {
         label: grade.grade_id,
         text: grade.grade_name,
       }));
+      ElMessage.success("获取年级成功！");
       console.log("取得年级：", response.data);
     } catch (error) {
       console.error("Error fetching grades:", error);
+      ElMessage.error("获取年级失败！");
     }
   };
 
   const fetchUnits = async (subjectId, gradeId) => {
+    ElMessage.success("正在获取单元数据");
     try {
       const response = await axios.get(apiConfig.unitListUrl, {
         params: {
@@ -56,12 +63,14 @@ export default function useFetchData() {
           grade_id: gradeId,
         },
       });
+      ElMessage.success("获取单元成功！");
       radioGroups.value[2].options = response.data.map((unit) => ({
         label: unit.unit_id,
         text: unit.unit_name,
       }));
     } catch (error) {
       console.error("Error fetching units:", error);
+      ElMessage.error("获取单元失败！");
     }
   };
 

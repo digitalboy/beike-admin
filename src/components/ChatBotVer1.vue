@@ -55,7 +55,7 @@
                                 :style="{ '--delay': randomDelay() + 'ms' }">
                                 <el-checkbox :label="disIntContent.dis_int_content_id"
                                     @dblclick="() => showDialog(disIntContent.dis_int_content_id, disIntContent.dis_int_name, disIntContent.dis_int_content, 'disInt', disIntContent.lesson_id)">
-                                    {{ disIntContent.dis_int_name }}
+                                    <span class="text-truncate-200">{{ disIntContent.dis_int_name }}</span>
                                 </el-checkbox>
                             </div>
                         </el-checkbox-group>
@@ -101,12 +101,12 @@
         <el-input v-model="dialogTitle" :placeholder="currentItem.title" maxlength="100" type="text"
             show-word-limit></el-input>
         <div style="margin: 20px;" />
+
         <el-input v-model="editContent" type="textarea" :autosize="{ minRows: 5, maxRows: 30 }"
             :placeholder="currentItem.content"></el-input>
         <div style="margin: 20px;" />
         <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            
+            <el-button @click="dialogVisible = false">取 消</el-button>            
             <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content">
                 确定更新
             </el-button>
@@ -124,6 +124,7 @@ import useFetchDisIntContents from '@/composables/useFetchDisIntContents';
 import useFetchEdudesContents from '@/composables/useFectchEduDesContents';
 import apiConfig from "@/apicongfig/api.js";
 import axios from "@/apicongfig/tokencheck.js";
+import { ElMessage } from "element-plus";
 
 import { defineComponent, ref, watchEffect, reactive } from 'vue';
 import { randomDelay } from '@/composables/animationUtils.js';
@@ -185,6 +186,7 @@ export default defineComponent({
         fetchGrades();
 
         const showDialog = (id, title, content, group, lesson_id) => {
+            dialogTitle.value = title;
             currentItem.id = id;
             currentItem.title = title;
             currentItem.content = content;
@@ -195,6 +197,7 @@ export default defineComponent({
         };
 
         const updateDatabase = async () => {
+            ElMessage.warning("正在更新数据……");
             let apiURL = "";
             let data = {};
 
@@ -234,10 +237,11 @@ export default defineComponent({
                     await fetchEduDesContents(selectedLessons.value);
                 }
                 dialogVisible.value = false;
-                dialogVisible.value = false;
+                 ElMessage.success("更新成功。");
             } catch (error) {
                 // Handle error
                 console.error(error);
+                ElMessage.error("更新数据错误！");
             }
         };
 
@@ -319,6 +323,14 @@ export default defineComponent({
     padding: 1rem;
     align-items: center;
     margin-bottom: 1rem;
+}
+
+.text-truncate-200 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: block;
 }
 
 @import '@/styles/slideInAnimation.css';
