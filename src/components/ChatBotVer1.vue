@@ -70,7 +70,7 @@
                                 :style="{ '--delay': randomDelay() + 'ms' }">
                                 <el-checkbox :label="eduDesContent.edu_des_id"
                                     @dblclick="() => showDialog(eduDesContent.edu_des_id, eduDesContent.edu_des_name, eduDesContent.edu_des_content, 'eduDes', eduDesContent.lesson_id)">
-                                    {{ eduDesContent.edu_des_name }}
+                                    <span class="text-truncate-200">{{ eduDesContent.edu_des_name }}</span>
                                 </el-checkbox>
                             </div>
                         </el-checkbox-group>
