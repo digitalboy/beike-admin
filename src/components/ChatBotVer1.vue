@@ -134,8 +134,10 @@ export default defineComponent({
     setup() {
         const selectedDisIntContents = ref([]);
         const selectedEduDesContents = ref([]);
-        const selectedLessons = ref([]);
-        const selectedOptions = ref(['', '', '']);
+        const selectedLessons = ref([]);        
+        const savedOptions = JSON.parse(localStorage.getItem("selectedOptions")) || ['', '', ''];
+        const selectedOptions = ref(savedOptions);
+
         const { radioGroups, fetchSubjects, fetchGrades, fetchUnits } = useFetchData();
         const { lessonList, fetchLessons } = useFetchLessons();
         const { disIntContents, fetchDisIntContents } = useFetchDisIntContents();
@@ -181,6 +183,11 @@ export default defineComponent({
         watchEffect(async () => {
             await updateEduDesContents();
         });
+
+        watchEffect(() => {
+            localStorage.setItem("selectedOptions", JSON.stringify(selectedOptions.value));
+        });
+
 
         fetchSubjects();
         fetchGrades();
