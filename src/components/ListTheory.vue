@@ -6,7 +6,11 @@
           <span class="text-truncate-200">{{ scope.row.theory_content }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="author" label="作者/出处" width="200"></el-table-column>
+      <el-table-column prop="author" label="作者/出处" width="200">
+         <template #default="scope">
+            <span class="text-truncate-200">{{ scope.row.author }}</span>
+          </template>
+      </el-table-column>
       <el-table-column prop="tags" label="标签管理">
         <template #default="scope">
 
