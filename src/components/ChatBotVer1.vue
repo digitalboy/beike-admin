@@ -106,7 +106,7 @@
             :placeholder="currentItem.content"></el-input>
         <div style="margin: 20px;" />
         <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>            
+            <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content">
                 确定更新
             </el-button>
@@ -134,7 +134,7 @@ export default defineComponent({
     setup() {
         const selectedDisIntContents = ref([]);
         const selectedEduDesContents = ref([]);
-        const selectedLessons = ref([]);        
+        const selectedLessons = ref([]);
         const savedOptions = JSON.parse(localStorage.getItem("selectedOptions")) || ['', '', ''];
         const selectedOptions = ref(savedOptions);
 
@@ -150,12 +150,26 @@ export default defineComponent({
 
         const updateGradesAndSubjects = async () => {
             if (selectedOptions.value[0] !== '' && selectedOptions.value[1] !== '') {
+                selectedOptions.value[2] = '';
+                selectedLessons.value = [];
+                lessonList.value = [];
+                selectedDisIntContents.value = [];
+                disIntContents.value = [];
+                selectedEduDesContents.value = [];
+                eduDesContents.value = [];
                 await fetchUnits(selectedOptions.value[0], selectedOptions.value[1]);
             }
         };
 
+
         const updateLessons = async () => {
             if (selectedOptions.value[2] !== '') {
+                selectedLessons.value = [];
+                lessonList.value = [];
+                selectedDisIntContents.value = [];
+                disIntContents.value = [];
+                selectedEduDesContents.value = [];
+                eduDesContents.value = [];
                 await fetchLessons(selectedOptions.value[2]);
             }
         };
@@ -244,7 +258,7 @@ export default defineComponent({
                     await fetchEduDesContents(selectedLessons.value);
                 }
                 dialogVisible.value = false;
-                 ElMessage.success("更新成功。");
+                ElMessage.success("更新成功。");
             } catch (error) {
                 // Handle error
                 console.error(error);
