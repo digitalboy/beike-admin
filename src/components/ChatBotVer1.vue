@@ -47,35 +47,51 @@
                     </div>
                 </div>
 
-                <div class="group-container">
-                    <div class="group-wrapper">
-                        <h3 class="group-title">学科融合（可多选）</h3>
-                        <el-checkbox-group v-model="selectedDisIntContents" class="checkbox-grid">
-                            <div v-for="(disIntContent, index) in disIntContents" :key="index" class="slide-in"
-                                :style="{ '--delay': randomDelay() + 'ms' }">
-                                <el-checkbox :label="disIntContent.dis_int_content_id"
-                                    @dblclick="() => showDialog(disIntContent.dis_int_content_id, disIntContent.dis_int_name, disIntContent.dis_int_content, 'disInt', disIntContent.lesson_id)">
-                                    <span class="text-truncate-200">{{ disIntContent.dis_int_name }}</span>
-                                </el-checkbox>
-                            </div>
-                        </el-checkbox-group>
+                <!-- 在这里遍历课文列表 -->
+                <div v-for="(lesson, index) in lessonList" :key="index">
+                    <div class="group-container" v-if="selectedLessons.includes(lesson.lesson_id)">
+                        <div class="group-wrapper">
+                            <h3 class="group-title">{{ lesson.lesson_name }}的学科融合（可多选）
+                                <el-button class="add-button" type="text"
+                                    @click="showAddContents(lesson.lesson_id, 'disInt')">新增</el-button>
+                            </h3>
+                            <el-checkbox-group v-model="selectedDisIntContents[lesson.lesson_id]" class="checkbox-grid">
+                                <!-- 在这里遍历与课文相关的学科融合内容 -->
+                                <div v-for="(disIntContent, index) in disIntContents.filter(content => content.lesson_id === lesson.lesson_id)"
+                                    :key="index" class="slide-in" :style="{ '--delay': randomDelay() + 'ms' }">
+                                    <el-tooltip :content="disIntContent.dis_int_name" placement="top">
+                                        <el-checkbox :label="disIntContent.dis_int_content_id"
+                                            @dblclick="() => showDialog(disIntContent.dis_int_content_id, disIntContent.dis_int_name, disIntContent.dis_int_content, 'disInt', disIntContent.lesson_id)">
+                                            <span class="text-truncate-200">{{ disIntContent.dis_int_name }}</span>
+                                        </el-checkbox>
+                                    </el-tooltip>
+                                </div>
+                            </el-checkbox-group>
+                        </div>
+                    </div>
+
+                    <div class="group-container" v-if="selectedLessons.includes(lesson.lesson_id)">
+                        <div class="group-wrapper">
+                            <h3 class="group-title">{{ lesson.lesson_name }}的教学设计（可多选）
+                                <el-button type="text" @click="showAddContents(lesson.lesson_id, 'eduDes')">新增</el-button>
+                            </h3>
+                            <el-checkbox-group v-model="selectedEduDesContents[lesson.lesson_id]" class="checkbox-grid">
+                                <!-- 在这里遍历与课文相关的教学设计内容 -->
+                                <div v-for="(eduDesContent, index) in eduDesContents.filter(content => content.lesson_id === lesson.lesson_id)"
+                                    :key="index" class="slide-in" :style="{ '--delay': randomDelay() + 'ms' }">
+                                    <el-tooltip :content="eduDesContent.edu_des_name" placement="top">
+                                        <el-checkbox :label="eduDesContent.edu_des_id"
+                                            @dblclick="() => showDialog(eduDesContent.edu_des_id, eduDesContent.edu_des_name, eduDesContent.edu_des_content, 'eduDes', eduDesContent.lesson_id)">
+                                            <span class="text-truncate-200">{{ eduDesContent.edu_des_name }}</span>
+                                        </el-checkbox>
+                                    </el-tooltip>
+                                </div>
+                            </el-checkbox-group>
+                        </div>
                     </div>
                 </div>
 
-                <div class="group-container">
-                    <div class="group-wrapper">
-                        <h3 class="group-title">教学设计（可多选）</h3>
-                        <el-checkbox-group v-model="selectedEduDesContents" class="checkbox-grid">
-                            <div v-for="(eduDesContent, index) in eduDesContents" :key="index" class="slide-in"
-                                :style="{ '--delay': randomDelay() + 'ms' }">
-                                <el-checkbox :label="eduDesContent.edu_des_id"
-                                    @dblclick="() => showDialog(eduDesContent.edu_des_id, eduDesContent.edu_des_name, eduDesContent.edu_des_content, 'eduDes', eduDesContent.lesson_id)">
-                                    <span class="text-truncate-200">{{ eduDesContent.edu_des_name }}</span>
-                                </el-checkbox>
-                            </div>
-                        </el-checkbox-group>
-                    </div>
-                </div>
+
 
                 <div class="group-container">
                     <div class="group-wrapper">
@@ -96,7 +112,7 @@
         </el-row>
     </div>
 
-    <el-dialog v-model="dialogVisible" title="请编辑内容" width="70%">
+    <el-dialog v-model="dialogVisible" title="请编辑内容" width="70%" draggable="true">
 
         <el-input v-model="dialogTitle" :placeholder="currentItem.title" maxlength="100" type="text"
             show-word-limit></el-input>
@@ -107,9 +123,18 @@
         <div style="margin: 20px;" />
         <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content">
+            <el-button type="primary" @click="updateDatabase" :disabled="editContent === currentItem.content"
+                v-if="!addMode">
                 确定更新
             </el-button>
+            <el-button type="primary" @click="submitAddDisIntForm" v-if="addMode && currentItem.group === 'disInt'">
+                添加学科融合内容
+            </el-button>
+            <el-button type="primary" @click="submitAddEduDesForm" v-if="addMode && currentItem.group === 'eduDes'">
+                添加教学设计内容
+            </el-button>
+
+
         </span>
 
     </el-dialog>
@@ -125,15 +150,17 @@ import useFetchEdudesContents from '@/composables/useFectchEduDesContents';
 import apiConfig from "@/apicongfig/api.js";
 import axios from "@/apicongfig/tokencheck.js";
 import { ElMessage } from "element-plus";
-
+import { addDisIntContent, addEduDesContent } from '@/composables/useAddDisintAndEduDes.js';
 import { defineComponent, ref, watchEffect, reactive } from 'vue';
 import { randomDelay } from '@/composables/animationUtils.js';
+
+
 
 export default defineComponent({
     name: 'ChatBotVer1',
     setup() {
-        const selectedDisIntContents = ref([]);
-        const selectedEduDesContents = ref([]);
+        const selectedDisIntContents = reactive({});
+        const selectedEduDesContents = reactive({});
         const selectedLessons = ref([]);
         const savedOptions = JSON.parse(localStorage.getItem("selectedOptions")) || ['', '', ''];
         const selectedOptions = ref(savedOptions);
@@ -143,10 +170,14 @@ export default defineComponent({
         const { disIntContents, fetchDisIntContents } = useFetchDisIntContents();
         const { eduDesContents, fetchEduDesContents } = useFetchEdudesContents();
 
+
         const dialogVisible = ref(false);
         const dialogTitle = ref('');
         const editContent = ref('');
         const currentItem = reactive({ id: '', title: '', content: '', group: '' });
+
+        const addMode = ref(false);
+
 
         const updateGradesAndSubjects = async () => {
             if (selectedOptions.value[0] !== '' && selectedOptions.value[1] !== '') {
@@ -206,6 +237,17 @@ export default defineComponent({
         fetchSubjects();
         fetchGrades();
 
+        const showAddContents = (lesson_id, group = '') => {
+            addMode.value = true;
+            currentItem.lesson_id = lesson_id;
+            currentItem.group = group;
+            console.log("123", group);
+            dialogTitle.value = '';
+            editContent.value = '';
+            dialogVisible.value = true;
+        };
+
+
         const showDialog = (id, title, content, group, lesson_id) => {
             dialogTitle.value = title;
             currentItem.id = id;
@@ -215,6 +257,7 @@ export default defineComponent({
             currentItem.lesson_id = lesson_id;
             editContent.value = content;
             dialogVisible.value = true;
+            addMode.value = false;
         };
 
         const updateDatabase = async () => {
@@ -248,6 +291,8 @@ export default defineComponent({
                     return;
             }
 
+
+
             try {
                 const response = await axios.put(apiURL, data);
                 // Handle success
@@ -267,6 +312,32 @@ export default defineComponent({
         };
 
 
+        const submitAddDisIntForm = async () => {
+            const payload = {
+                lesson_id: currentItem.lesson_id,
+                dis_int_name: dialogTitle.value,
+                dis_int_content: editContent.value,
+            };
+            const success = await addDisIntContent(payload);
+            if (success) {
+                dialogVisible.value = false;
+                await fetchDisIntContents(selectedLessons.value);
+            }
+        };
+
+        const submitAddEduDesForm = async () => {
+            const payload = {
+                lesson_id: currentItem.lesson_id,
+                edu_des_name: dialogTitle.value,
+                edu_des_content: dialogTitle.value,
+            };
+            const success = await addEduDesContent(payload);
+            if (success) {
+                dialogVisible.value = false;
+                await fetchEduDesContents(selectedLessons.value);
+            }
+        };
+
         return {
             selectedOptions,
             radioGroups,
@@ -280,11 +351,15 @@ export default defineComponent({
             editContent,
             dialogVisible,
             currentItem,
+            addMode,
             showDialog,
             randomDelay,
             updateDatabase,
             fetchDisIntContents,
             fetchEduDesContents,
+            submitAddDisIntForm,
+            submitAddEduDesForm,
+            showAddContents
         };
     },
 });
@@ -294,6 +369,10 @@ export default defineComponent({
 
 
 <style scoped>
+.add-button {
+    padding: 0;
+}
+
 .checkbox-grid div {
     display: inline-grid;
     width: 100%;

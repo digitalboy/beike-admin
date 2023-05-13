@@ -1,9 +1,11 @@
 import { ref } from "vue";
 import axios from "@/apicongfig/tokencheck.js";
 import apiConfig from "@/apicongfig/api.js";
+import { ElMessage } from "element-plus";
 
 // 修改 useFetchDisIntContents 函数
 export default function useFetchDisIntContents() {
+    ElMessage.warning("正在获取学科融合数据")
     const disIntContents = ref([]);
 
     const fetchDisIntContents = async (lessonIds) => {
@@ -21,7 +23,7 @@ export default function useFetchDisIntContents() {
                 const response = await axios.get(url);
                 return response.data;
             });
-
+            ElMessage.success("获取学科融合数据成功");
             const results = await Promise.all(requests);
             disIntContents.value = results.flat();
             console.log(results);
