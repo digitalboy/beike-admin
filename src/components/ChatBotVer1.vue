@@ -118,8 +118,10 @@
             show-word-limit></el-input>
         <div style="margin: 20px;" />
 
-        <el-input v-model="editContent" type="textarea" :autosize="{ minRows: 5, maxRows: 30 }"
-            :placeholder="currentItem.content"></el-input>
+        <QuillEditor toolbar="full" v-model:content="editContent" theme="snow" :content="currentItem.content"
+            contentType="html" />
+
+
         <div style="margin: 20px;" />
         <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
@@ -153,11 +155,16 @@ import { ElMessage } from "element-plus";
 import { addDisIntContent, addEduDesContent } from '@/composables/useAddDisintAndEduDes.js';
 import { defineComponent, ref, watchEffect, reactive } from 'vue';
 import { randomDelay } from '@/composables/animationUtils.js';
-
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import '@vueup/vue-quill/dist/vue-quill.bubble.css';
 
 
 export default defineComponent({
     name: 'ChatBotVer1',
+    components: {
+        QuillEditor,
+    },
     setup() {
         const selectedDisIntContents = reactive({});
         const selectedEduDesContents = reactive({});
@@ -177,6 +184,8 @@ export default defineComponent({
         const currentItem = reactive({ id: '', title: '', content: '', group: '' });
 
         const addMode = ref(false);
+
+
 
 
         const updateGradesAndSubjects = async () => {
@@ -249,6 +258,7 @@ export default defineComponent({
 
 
         const showDialog = (id, title, content, group, lesson_id) => {
+            console.log("Edit content:", content);
             dialogTitle.value = title;
             currentItem.id = id;
             currentItem.title = title;
