@@ -18,6 +18,10 @@ export default {
 </script>
 
 <style>
+.qlbt-operation-menu {
+  z-index: 3000 !important;
+}
+
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }

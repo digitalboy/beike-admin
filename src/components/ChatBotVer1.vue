@@ -118,9 +118,10 @@
             show-word-limit></el-input>
         <div style="margin: 20px;" />
 
-        <QuillEditor toolbar="full" v-model:content="editContent" theme="snow" :content="currentItem.content"
-            contentType="html" />
+        <!-- <QuillEditor toolbar="full" v-model:content="editContent" theme="snow" :content="currentItem.content"
+            contentType="html" /> -->
 
+        <QuillBetterTableEditor toolbar="full" v-model:content="editContent" theme="snow" :content="currentItem.content"  contentType="html"/>
 
         <div style="margin: 20px;" />
         <span class="dialog-footer">
@@ -155,15 +156,13 @@ import { ElMessage } from "element-plus";
 import { addDisIntContent, addEduDesContent } from '@/composables/useAddDisintAndEduDes.js';
 import { defineComponent, ref, watchEffect, reactive } from 'vue';
 import { randomDelay } from '@/composables/animationUtils.js';
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
-import '@vueup/vue-quill/dist/vue-quill.bubble.css';
+import QuillBetterTableEditor from '@/components/QuillBetterTableEditor.vue'
 
 
 export default defineComponent({
     name: 'ChatBotVer1',
     components: {
-        QuillEditor,
+        QuillBetterTableEditor,
     },
     setup() {
         const selectedDisIntContents = reactive({});
