@@ -19,14 +19,16 @@ export default {
   disIntAddUrl: `${serverIp}:8009/api/dis_int/new`,
   disIntDelUrl: `${serverIp}:8009/api/dis_int/delete`,
 
-  theoryListUrl: `${serverIp}:8009/api/theory/list`,
+  theoryListByTagUrl: `${serverIp}:8009/api/theory/list`,
   theoryUpdateUrl: `${serverIp}:8009/api/theory/update`,
   theoryAddUrl: `${serverIp}:8009/api/theory/new`,
   theoryDelUrl: `${serverIp}:8009/api/theory/delete`,
-  tagListUrl: `${serverIp}:8009/api/theory/list`,
+  allTagsListUrl: `${serverIp}:8009/api/theory/tags`,
 
   eduDesListURl: `${serverIp}:8009/api/edudes/list`,
   eduDesAddUrl: `${serverIp}:8009/api/edudes/new`,
   eduDesUpdateUrl: `${serverIp}:8009/api/edudes/update`,
-}
+
+  creatBotUrl: `${serverIp}:8009/api/chatbot/create_chatbot`,
+};
 

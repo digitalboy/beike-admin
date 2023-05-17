@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div ref="editor" class="editor"></div>
 
         <div class="ql-table-icon ql-video" @click="insertTable">
             <img :src="tableIcon" alt="Insert table" />
         </div>
+        <div ref="editor" class="editor"></div>
 
     </div>
 </template>
@@ -36,7 +36,7 @@ const toolbarOptions = [
     // [{ 'direction': 'rtl' }],                         // text direction
 
     // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    [{ 'header': [1, 2, false] }],
+    [{ 'header': [ 3, 4, false] }],
 
     [{ 'color': [] }],          // dropdown with defaults
     // [{ 'font': ['Microsoft-YaHei'] }],
@@ -105,9 +105,10 @@ export default {
 </script>
 
 <style scoped>
-.editor {
-    height: 100%;
+.ql-editor {
+    line-height: 2 !important;
 }
+
 
 .ql-table-icon {
     position: relative;

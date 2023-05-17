@@ -206,7 +206,7 @@ export default {
     async function fetchData() {
       try {
         const response = await axios.get(
-          apiConfig.theoryListUrl
+          apiConfig.theoryListByTagUrl
         );
         ElMessage.success("得到了最新数据！");
         theories.value = response.data.reverse();//倒序

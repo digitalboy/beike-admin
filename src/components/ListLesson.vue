@@ -60,9 +60,11 @@
                     show-word-limit></el-input>
                 <template v-else>{{ dialogTitle }}</template>
             </template>
-            <el-form>
+            <!-- <el-form>
                 <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
-            </el-form>
+            </el-form> -->
+
+             <QuillBetterTableEditor toolbar="full" v-model:content="textarea" theme="snow" contentType="html" />
 
             <template v-slot:footer>
                 <span class="dialog-footer">
@@ -89,9 +91,13 @@ import axios from "@/apicongfig/tokencheck.js";
 import { ref, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from 'vue-router';
+import QuillBetterTableEditor from '@/components/QuillBetterTableEditor.vue'
 
 export default {
     name: "ListLesson",
+    components: {
+        QuillBetterTableEditor,
+    },
     setup() {
         const loading = ref(false);
         const lessons = ref([]);
