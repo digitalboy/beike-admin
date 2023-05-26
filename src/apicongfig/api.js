@@ -30,5 +30,12 @@ export default {
   eduDesUpdateUrl: `${serverIp}:8009/api/edudes/update`,
 
   creatBotUrl: `${serverIp}:8009/api/chatbot/create_chatbot`,
-};
 
+  // openAI API
+  openAIUrl: "https://api.openai.com/v1/chat/completions",
+  openAIKey: "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",
+
+  // similarity search API
+  similaSearchUrl: `${serverIp}:8009/api/chatbot/similarity-search`,
+
+}

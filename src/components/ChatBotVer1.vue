@@ -92,8 +92,6 @@
                     </div>
                 </div>
 
-
-
                 <div class="group-container">
                     <div class="group-wrapper">
                         <h3 class="group-title">理论标签（可多选）</h3>
@@ -388,7 +386,7 @@ export default defineComponent({
             const payload = {
                 lesson_id: currentItem.lesson_id,
                 edu_des_name: dialogTitle.value,
-                edu_des_content: dialogTitle.value,
+                edu_des_content: editContent.value,
             };
             const success = await addEduDesContent(payload);
             if (success) {

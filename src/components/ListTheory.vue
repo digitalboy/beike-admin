@@ -7,9 +7,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="author" label="作者/出处" width="200">
-         <template #default="scope">
-            <span class="text-truncate-200">{{ scope.row.author }}</span>
-          </template>
+        <template #default="scope">
+          <span class="text-truncate-200">{{ scope.row.author }}</span>
+        </template>
       </el-table-column>
       <el-table-column prop="tags" label="标签管理">
         <template #default="scope">
@@ -40,14 +40,14 @@
         <template v-else>{{ dialogTitle }}</template>
       </template>
       <el-form>
-        <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input>
+        <!-- <el-input v-model="textarea" type="textarea" :autosize="{ minRows: 1, maxRows: 30 }"></el-input> -->
+        <QuillBetterTableEditor toolbar="full" v-model:content="textarea" theme="snow" contentType="html" />
       </el-form>
 
       <template v-slot:footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="updateDatabase(currentTheory.id)"
-            :disabled="textarea === originalText">
+          <el-button type="primary" @click="updateDatabase(currentTheory.id)" :disabled="textarea === originalText">
             确定更新
           </el-button>
         </span>
@@ -67,10 +67,13 @@ import axios from "@/apicongfig/tokencheck.js";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from 'vue-router';
+import QuillBetterTableEditor from '@/components/QuillBetterTableEditor.vue'
 
 export default {
   name: "ListTheory",
-
+  components: {
+    QuillBetterTableEditor,
+  },
   setup() {
     const theories = ref([]);
     const dialogVisible = ref(false);
@@ -93,7 +96,7 @@ export default {
     // const currentTheoryid = ref("");
     // const currentTheoryColume = ref("");
 
-   async function updateDatabase(theoryId, rowData = null) {
+    async function updateDatabase(theoryId, rowData = null) {
       const data = {
         theory_id: theoryId,
         theory_content: rowData ? rowData.theory_content : currentTheory.content,
@@ -104,6 +107,7 @@ export default {
       // 根据 currentTheory.column 更新对应的值
       if (currentTheory.column === 'theory_content') {
         data.theory_content = textarea.value;
+
       } else if (currentTheory.column === 'author') {
         data.author = textarea.value;
       }
@@ -183,7 +187,7 @@ export default {
         currentTheory.content = row.theory_content;
         currentTheory.author = row.author;
 
-        
+
         dialogTitle.value = "请编辑内容";
         originalText.value = event.target.textContent;
         textarea.value = event.target.textContent;
