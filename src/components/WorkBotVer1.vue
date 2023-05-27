@@ -124,7 +124,7 @@ import useFetchLessons from '@/composables/useFetchLessons';
 import useFetchDisIntContents from '@/composables/useFetchDisIntContents';
 import useFetchEdudesContents from '@/composables/useFectchEduDesContents';
 import useSimilarSearch from "@/composables/useSimilarSearch.js";
-import { defineComponent, ref, watchEffect, reactive, computed } from 'vue';
+import { defineComponent, ref, watchEffect, reactive, computed} from 'vue';
 import apiConfig from "@/apicongfig/api.js";
 import axios from '@/apicongfig/tokencheck.js';
 
@@ -216,15 +216,15 @@ export default defineComponent({
         const similarQueryContent = ref("布鲁姆");
         const simiSearch = () => {
             similarSearch(similarQueryContent.value, 3); // 这里的3是k的值，你可以根据需要更改            
-            console.log("123131", similarQueryContent.value)
-            console.log(searchResults)
+            // console.log("123131", similarQueryContent.value)
+            console.log(JSON.stringify(searchResults, null, 2))
         };
 
         watchEffect(() => {
             if (searchResults.value) {
                 let contents = searchResults.value.map(item => item.page_content);
-                console.log(JSON.stringify(contents, null, 2));
-                console.log(contents[0]);
+                // console.log(JSON.stringify(contents, null, 2));
+                // console.log(contents[0]);
                 theryContent.value = contents[0]
             }
         });
@@ -271,10 +271,10 @@ export default defineComponent({
                                                     没有拿到参考格式前，不要写教学设计。` },
                     ],
                     "temperature": 1,
-                    "stream": true
+                    // "stream": true
                 }, {
                     "headers": {
-                        'Authorization': 'Bearer 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',
+                        'Authorization': 'Bearer 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',
                         'Content-Type': 'application/json'
                     }
 
@@ -292,50 +292,50 @@ export default defineComponent({
 
 
         // const eventSource = ref(null);
-
-
         // const askOpenAI = async () => {
         //     // 发送POST请求
         //     const response = await axios.post(apiConfig.openAIUrl, {
-        //                     "model": 'gpt-3.5-turbo',
-        //                     "messages": [
-        //                         { "role": 'system', content: systemPrompt },
-        //                         { "role": 'user', content: '' },
-        //                         { "role": 'assistant', content: '老师您好，我是备课小宝，我可以帮助您。' },
-        //                         { "role": 'user', content: objectTask.value },
-        //                         { "role": 'assistant', content: '好的，请给我课文的原文。' },
-        //                         { "role": 'user', content: `这是课文原文：${strippedLessonText.value}` },
-        //                         { "role": 'assistant', content: '课文原文已经收到，还有教学目标，参考理论和格式的参考，现在给我教学目标。' },
-        //                         { "role": 'user', content: `这是教学目标：${strippedTeachObje.value}` },
-        //                         { "role": 'assistant', content: '收到教学目标，请给我教学理论。我是教学助理，负责编写教学设计，当然需要理论支持。' },
-        //                         { "role": 'user', content: `给你教学理论：${theryContent.value}，我已经给你了
-        //                                                     1.课文原文，
-        //                                                     2. 教学目标
-        //                                                     3. 教学理论
-        //                                                     4. 参考格式（还没给你，我马上给你）。
-        //                                                     没有拿到参考格式前，不要写教学设计。` },
-        //                     ],
-        //                     "temperature": 1,
-        //                     "stream": "True"
-        //                 }, {
-        //                     "headers": {
-        //                         'Authorization': 'Bearer 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',
-        //                         'Content-Type': 'application/json'
-        //                     }
-
-        //                 });
+        //         "model": 'gpt-3.5-turbo',
+        //         "messages": [
+        //             { "role": 'system', content: systemPrompt },
+        //             { "role": 'user', content: '' },
+        //             { "role": 'assistant', content: '老师您好，我是备课小宝，我可以帮助您。' },
+        //             { "role": 'user', content: objectTask.value },
+        //             { "role": 'assistant', content: '好的，请给我课文的原文。' },
+        //             { "role": 'user', content: `这是课文原文：${strippedLessonText.value}` },
+        //             { "role": 'assistant', content: '课文原文已经收到，还有教学目标，参考理论和格式的参考，现在给我教学目标。' },
+        //             { "role": 'user', content: `这是教学目标：${strippedTeachObje.value}` },
+        //             { "role": 'assistant', content: '收到教学目标，请给我教学理论。我是教学助理，负责编写教学设计，当然需要理论支持。' },
+        //             {
+        //                 "role": 'user', content: `给你教学理论：${theryContent.value}，我已经给你了
+        //                         1.课文原文，
+        //                         2. 教学目标
+        //                         3. 教学理论
+        //                         4. 参考格式（还没给你，我马上给你）。
+        //                         没有拿到参考格式前，不要写教学设计。` },
+        //         ],
+        //         "temperature": 1,
+        //         "stream": true
+        //     }, {
+        //         "headers": {
+        //             'Authorization': 'Bearer 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',
+        //             'Content-Type': 'application/json'
+        //         }
+        //     });
 
         //     // 获取SSE URL
-        //     const sseUrl = response.headers.get('Location');
+        //     console.log(response.headers);
+        //     const eventSource = new EventSource(apiConfig.openAIUrl);
 
-        //     // 创建EventSource实例
-        //     eventSource.value = new EventSource(sseUrl);
-
-        //     eventSource.value.onmessage = (event) => {
+        //    eventSource.onmessage = (event) => {
         //         const data = JSON.parse(event.data);
-        //         aiAnswer.value += data.choices[0].message.content; // 追加接收到的数据
+        //         if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+        //             aiAnswer.value += data.choices[0].delta.content; // 追加接收到的数据
+        //         }
         //         console.log('SSE message received:', data);
         //     };
+
+
         // };
 
         // const stopSSE = () => {

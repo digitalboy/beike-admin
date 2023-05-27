@@ -9,6 +9,7 @@ import AddTheory from '../components/AddTheory.vue' // 添加处理
 import ListEduDesign from '../components/ListEduDesign.vue' // 添加处理
 import ChatBotVer1 from '../components/ChatBotVer1.vue' // 添加处理
 import WorkBotVer1 from '../components/WorkBotVer1.vue' // 添加处理'
+import ChatTest from '../components/ChatTest.vue' // 添加处理
 
 const routes = [
   {
@@ -55,6 +56,11 @@ const routes = [
     path: "/workbot", // 新路由的路径
     name: "WorkBotVer1",
     component: WorkBotVer1, // 对应的组件
+  },
+  {
+    path: "/test", // 新路由的路径
+    name: "ChatTest",
+    component: ChatTest, // 对应的组件
   },
 ];
 
