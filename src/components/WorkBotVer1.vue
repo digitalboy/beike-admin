@@ -274,7 +274,7 @@ export default defineComponent({
                     // "stream": true
                 }, {
                     "headers": {
-                        'Authorization': 'Bearer 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',
+                        'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}',
                         'Content-Type': 'application/json'
                     }
 

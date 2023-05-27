@@ -18,10 +18,14 @@ export default {
         let eventSource;
 
         const streamData = async () => {
+
+             if (!process.env.OPENAI_API_KEY) {
+                throw new Error('OpenAI API Key is not available in the environment variables');
+            }
             eventSource = fetchEventSource(apiConfig.openAIUrl, {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer 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',
+                    'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
