@@ -6,53 +6,53 @@
 </template>
 
 <script>
-
-import apiConfig from "@/apicongfig/api.js";
 import { ref } from 'vue';
-import { fetchEventSource } from '@almars/fetch-event-source';
 
 export default {
     name: 'ChatTest',
     setup() {
         const textboxContent = ref('');
-        let eventSource;
-
+        
         const streamData = async () => {
-
-             if (!process.env.OPENAI_API_KEY) {
-                throw new Error('OpenAI API Key is not available in the environment variables');
-            }
-            eventSource = fetchEventSource(apiConfig.openAIUrl, {
+            const response = await fetch('http://localhost:3000/api/openai', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    "model": 'gpt-3.5-turbo',
                     "messages": [
                         { "role": 'system', content: '你是一个教师助理。' },
-                        { "role": 'user', content: '你好' },
+                        { "role": 'user', content: '你好啊！' },
                     ],
-                    "temperature": 1,
-                    "stream": true
                 }),
-                onmessage: (event) => {
-                    const data = JSON.parse(event.data);
-                    const content = data.choices[0].delta.content;
-                    textboxContent.value += content;
-                },
-                onerror: (event) => {
-                    console.error("EventSource failed:", event);
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            reader.read().then(function processText({ done, value }) {
+                if (done) {
+                    console.log('Stream finished.');
+                    return;
                 }
+
+                const result = decoder.decode(value);
+                const data = JSON.parse(result);
+                const content = data.choices[0].delta.content;
+                textboxContent.value += content;
+
+                return reader.read().then(processText);
             });
         }
 
-        streamData();
-
         return {
-            eventSource,
-            textboxContent
+            textboxContent,
+            streamData
         }
-    }}
+    }
+}
 </script>
