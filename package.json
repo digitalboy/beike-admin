@@ -23,6 +23,7 @@
     "quill": "^2.0.0-dev.3",
     "quill-better-table": "^1.2.10",
     "streamed-chatgpt-api": "^1.0.7",
+    "undici": "^5.22.1",
     "vue": "^3.2.13",
     "vue-highlight-words": "^3.0.1",
     "vue-router": "^4.1.6",

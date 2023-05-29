@@ -14,6 +14,7 @@ export default {
         const textboxContent = ref('');
         
         const streamData = async () => {
+            console.log("danlellllllll")
             const response = await fetch('http://localhost:3000/api/openai', {
                 method: 'POST',
                 headers: {
