@@ -12,7 +12,7 @@ export default {
     name: 'ChatTest',
     setup() {
         const textboxContent = ref('');
-        
+
         const streamData = async () => {
             console.log("danlellllllll")
             const response = await fetch('http://localhost:3000/api/openai', {
@@ -42,8 +42,10 @@ export default {
                 }
 
                 const result = decoder.decode(value);
-                const event = JSON.parse(result);  // 解析服务器发送的事件
-                const data = JSON.parse(event.data);  // 解析事件数据
+                const startIndex = result.indexOf("{");
+                const endIndex = result.lastIndexOf("}");
+                const eventData = result.slice(startIndex, endIndex + 1);
+                const data = JSON.parse(eventData);  // 解析事件数据
                 const content = data.choices[0].delta.content;
                 textboxContent.value += content;
 

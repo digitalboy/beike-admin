@@ -48,35 +48,52 @@
                 <div class="group-wrapper">
                     <h3 class="group-title">课文内容,理论和框架</h3>
                     <el-row :gutter="20">
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <h3 class="select-title">课文原文</h3>
                             <el-input type="textarea" placeholder="请输入内容" v-model="strippedLessonText"
-                                :autosize="{ minRows: 7, maxRows: 9 }">
+                                :autosize="{ minRows: 8, maxRows: 9 }">
                             </el-input>
                         </el-col>
 
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <h3 class="select-title">教学目标</h3>
                             <el-input type="textarea" placeholder="请输入内容" v-model="strippedTeachObje"
-                                :autosize="{ minRows: 7, maxRows: 9 }">
+                                :autosize="{ minRows: 8, maxRows: 9 }">
                             </el-input>
                         </el-col>
 
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <h3 class="select-title">理论搜索</h3>
                             <el-row :gutter="20">
                                 <el-col :span="24">
-                                    <el-input type="text" v-model="similarQueryContent">
-                                        <template #prepend>理论名称：</template>
-                                        <template #append> <el-button :icon="Search" @click="simiSearch" /> </template>
+                                    <el-input type="text" v-model="similarQueryTheory">
+                                        <template #append> <el-button :icon="Search"
+                                                @click="simiSearch(similarQueryTheory, 'theory')" /></template>
                                     </el-input>
                                 </el-col>
                             </el-row>
-                            <div style="margin-bottom: 20px;"></div>
+                            <div style="margin-bottom: 10px;"></div>
                             <el-input type="textarea" placeholder="理论内容" v-model="theryContent" readonly
-                                :autosize="{ minRows: 4, maxRows: 5 }">
+                                :autosize="{ minRows: 5, maxRows: 6 }">
                             </el-input>
                         </el-col>
+
+                        <el-col :span="6">
+                            <h3 class="select-title">框架搜索</h3>
+                            <el-row :gutter="20">
+                                <el-col :span="24">
+                                    <el-input type="text" v-model="similarQueryEduDesFrame">
+                                        <template #append> <el-button :icon="Search"
+                                                @click="simiSearch(similarQueryEduDesFrame, 'eduDesFrame')" /> </template>
+                                    </el-input>
+                                </el-col>
+                            </el-row>
+                            <div style="margin-bottom: 10px;"></div>
+                            <el-input type="textarea" placeholder="框架内容" v-model="eduDesFrameContent" readonly
+                                :autosize="{ minRows: 5, maxRows: 6 }">
+                            </el-input>
+                        </el-col>
+
                     </el-row>
                 </div>
             </div>
@@ -112,7 +129,7 @@
             </div>
 
             <div>
-                <button @click="askOpenAI">ASK</button>
+                <el-button @click="askOpenAI">ASK</el-button>
             </div>
         </el-col>
     </el-row>
@@ -124,8 +141,8 @@ import useFetchLessons from '@/composables/useFetchLessons';
 import useFetchDisIntContents from '@/composables/useFetchDisIntContents';
 import useFetchEdudesContents from '@/composables/useFectchEduDesContents';
 import useSimilarSearch from "@/composables/useSimilarSearch.js";
-import { defineComponent, ref, watchEffect, reactive, computed} from 'vue';
-import apiConfig from "@/apicongfig/api.js";
+import { defineComponent, ref, watchEffect, reactive, computed } from 'vue';
+// import apiConfig from "@/apicongfig/api.js";
 import axios from '@/apicongfig/tokencheck.js';
 
 import {
@@ -208,50 +225,78 @@ export default defineComponent({
         const stripHtmlTags = (str) => {
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = str;
+
+            let count = 1;
+            for (let li of tempDiv.getElementsByTagName("li")) {
+                li.textContent = count + '. ' + li.textContent;
+                count++;
+            }
+
             return tempDiv.textContent || tempDiv.innerText || "";
         };
 
+
         const theryContent = ref("");
+        const similarQueryTheory = ref("布鲁姆");
+
+        const eduDesFrameContent = ref("")
+        const similarQueryEduDesFrame = ref("语文教学设计一级框架")
+
         const { searchResults, similarSearch } = useSimilarSearch();
-        const similarQueryContent = ref("布鲁姆");
-        const simiSearch = () => {
-            similarSearch(similarQueryContent.value, 3); // 这里的3是k的值，你可以根据需要更改            
-            // console.log("123131", similarQueryContent.value)
-            console.log(JSON.stringify(searchResults, null, 2))
+        const { searchResults: searchResultsTheory, similarSearch: similarSearchTheory } = useSimilarSearch();
+        const { searchResults: searchResultsEduDesFrame, similarSearch: similarSearchEduDesFrame } = useSimilarSearch();
+
+        const simiSearch = (content, targetRef) => {
+            console.log(content)
+            if (targetRef === 'theory') {
+                similarSearchTheory(content, 3);
+            } else if (targetRef === 'eduDesFrame') {
+                similarSearchEduDesFrame(content, 3);
+            }
+            console.log(JSON.stringify(searchResultsTheory.value, null, 2))
+            console.log(JSON.stringify(searchResultsEduDesFrame.value, null, 2))
         };
 
         watchEffect(() => {
-            if (searchResults.value) {
-                let contents = searchResults.value.map(item => item.page_content);
-                // console.log(JSON.stringify(contents, null, 2));
-                // console.log(contents[0]);
+            if (searchResultsTheory.value) {
+                let contents = searchResultsTheory.value.map(item => item.page_content);
                 theryContent.value = contents[0]
+            }
+        });
+
+        watchEffect(() => {
+            if (searchResultsEduDesFrame.value) {
+                let contents = searchResultsEduDesFrame.value.map(item => item.page_content);
+                eduDesFrameContent.value = contents[0]
             }
         });
 
 
 
+
         const strippedLessonText = computed(() => stripHtmlTags(selectedLesson.value.lesson_text));
         const strippedTeachObje = computed(() => stripHtmlTags(selectedLesson.value.teach_objectives));
-
         const systemPrompt = "你是一名语文老师的助理，你的名字叫做“备课小宝”，你将为老师提供帮助，包括：基于各种理论的教学设计，丰富的课堂互动等内容。"
 
         const objectTask = computed(() => {
             return `请你为${selectedLesson.value.lesson_name}课编写教学设计。我会为你一步步的提供一下资料：
             1. 课文原文 
             2. 教学目标 
-            3.教学设计参考的教学理论 
-            4.参考格式和框架。
-            没有拿到4种资料前你不要急于编写，你说：请继续给我资料。`
+            3. 教学设计的基本框架            
+            没有拿到3种资料前你不要急于编写，你说：请继续给我资料。`
         });
 
 
         const aiAnswer = ref('');
+
         const askOpenAI = async () => {
-            console.log(strippedLessonText.value)
-            try {
-                const response = await axios.post(apiConfig.openAIUrl, {
-                    "model": 'gpt-3.5-turbo',
+            console.log("danlellllllll")
+            const response = await fetch('http://localhost:3000/api/openai', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
                     "messages": [
                         { "role": 'system', content: systemPrompt },
                         { "role": 'user', content: '' },
@@ -259,97 +304,44 @@ export default defineComponent({
                         { "role": 'user', content: objectTask.value },
                         { "role": 'assistant', content: '好的，请给我课文的原文。' },
                         { "role": 'user', content: `这是课文原文：${strippedLessonText.value}` },
-                        { "role": 'assistant', content: '课文原文已经收到，还有教学目标，参考理论和格式的参考，现在给我教学目标。' },
+                        { "role": 'assistant', content: '课文原文已经收到，还有教学目标和教学设计的基本框架，请继续给我资料:教学目标' },
                         { "role": 'user', content: `这是教学目标：${strippedTeachObje.value}` },
-                        { "role": 'assistant', content: '收到教学目标，请给我教学理论。我是教学助理，负责编写教学设计，当然需要理论支持。' },
+                        { "role": 'assistant', content: '我已经收到课文原文、教学目标。我是教学助理，负责编写教学设计，请继续给我资料:教学设计的基本框架。我会基于你给我的框架编写教学设计的。'},
                         {
-                            "role": 'user', content: `给你教学理论：${theryContent.value}，我已经给你了
-                                                    1.课文原文，
-                                                    2. 教学目标
-                                                    3. 教学理论
-                                                    4. 参考格式（还没给你，我马上给你）。
-                                                    没有拿到参考格式前，不要写教学设计。` },
+                            "role": 'user', content: `这里教学设计的基本框架：${eduDesFrameContent.value}，我已经给你了
+                                                                    1. 课文原文
+                                                                    2. 教学目标                                                                   
+                                                                    3. 教学设计的基本框架。请你开始编写教学设计，注意格式的结构化（请输出Json格式）。如果你认为需要更多的资料请告诉我，我会提供。` },
+                        
                     ],
-                    "temperature": 1,
-                    // "stream": true
-                }, {
-                    "headers": {
-                        'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}',
-                        'Content-Type': 'application/json'
-                    }
+                }),
+            });
 
-                });
-
-
-                console.log(response.data);
-                aiAnswer.value = response.data['choices'][0]['message']['content'];
-                console.log(aiAnswer.value);
-            } catch (error) {
-                console.log(error);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            reader.read().then(function processText({ done, value }) {
+                if (done) {
+                    console.log('Stream finished.');
+                    return;
+                }
+
+                const result = decoder.decode(value);
+                const startIndex = result.indexOf("{");
+                const endIndex = result.lastIndexOf("}");
+                const eventData = result.slice(startIndex, endIndex + 1);
+                const data = JSON.parse(eventData);  // 解析事件数据
+                const content = data.choices[0].delta.content;
+                aiAnswer.value += content;
+
+                return reader.read().then(processText);
+            });
+
         }
-
-
-
-        // const eventSource = ref(null);
-        // const askOpenAI = async () => {
-        //     // 发送POST请求
-        //     const response = await axios.post(apiConfig.openAIUrl, {
-        //         "model": 'gpt-3.5-turbo',
-        //         "messages": [
-        //             { "role": 'system', content: systemPrompt },
-        //             { "role": 'user', content: '' },
-        //             { "role": 'assistant', content: '老师您好，我是备课小宝，我可以帮助您。' },
-        //             { "role": 'user', content: objectTask.value },
-        //             { "role": 'assistant', content: '好的，请给我课文的原文。' },
-        //             { "role": 'user', content: `这是课文原文：${strippedLessonText.value}` },
-        //             { "role": 'assistant', content: '课文原文已经收到，还有教学目标，参考理论和格式的参考，现在给我教学目标。' },
-        //             { "role": 'user', content: `这是教学目标：${strippedTeachObje.value}` },
-        //             { "role": 'assistant', content: '收到教学目标，请给我教学理论。我是教学助理，负责编写教学设计，当然需要理论支持。' },
-        //             {
-        //                 "role": 'user', content: `给你教学理论：${theryContent.value}，我已经给你了
-        //                         1.课文原文，
-        //                         2. 教学目标
-        //                         3. 教学理论
-        //                         4. 参考格式（还没给你，我马上给你）。
-        //                         没有拿到参考格式前，不要写教学设计。` },
-        //         ],
-        //         "temperature": 1,
-        //         "stream": true
-        //     }, {
-        //         "headers": {
-        //             'Authorization': 'Bearer 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',
-        //             'Content-Type': 'application/json'
-        //         }
-        //     });
-
-        //     // 获取SSE URL
-        //     console.log(response.headers);
-        //     const eventSource = new EventSource(apiConfig.openAIUrl);
-
-        //    eventSource.onmessage = (event) => {
-        //         const data = JSON.parse(event.data);
-        //         if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
-        //             aiAnswer.value += data.choices[0].delta.content; // 追加接收到的数据
-        //         }
-        //         console.log('SSE message received:', data);
-        //     };
-
-
-        // };
-
-        // const stopSSE = () => {
-        //     if (eventSource.value) {
-        //         eventSource.value.close();
-        //         eventSource.value = null;
-        //     }
-        // };
-
-        // onUnmounted(() => {
-        //     stopSSE();
-        // });
-
-
 
 
 
@@ -372,15 +364,18 @@ export default defineComponent({
             aiAnswer,
             searchResults,
             similarSearch,
-            similarQueryContent,
-            simiSearch,
+            similarQueryTheory,
             theryContent,
+            similarQueryEduDesFrame,
+            eduDesFrameContent,
+            simiSearch,
             Check,
             Delete,
             Edit,
             Message,
             Search,
             Star,
+            axios
             // stopSSE,
         };
     },
