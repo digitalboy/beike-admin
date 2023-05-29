@@ -29,6 +29,8 @@ app.post("/api/openai", async (req, res) => {
         messageInput: req.body.messages,
         temperature: 1,
         fetchTimeout: 30000, // 设置请求超时时间为30秒
+        readTimeout: 30000, // 设置读取超时时间为30秒
+        totalTime: 60000, // 设置总超时时间为60秒
       },
       (content) => {
         // onResponse

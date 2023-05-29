@@ -42,12 +42,14 @@ export default {
                 }
 
                 const result = decoder.decode(value);
-                const data = JSON.parse(result);
+                const event = JSON.parse(result);  // 解析服务器发送的事件
+                const data = JSON.parse(event.data);  // 解析事件数据
                 const content = data.choices[0].delta.content;
                 textboxContent.value += content;
 
                 return reader.read().then(processText);
             });
+
         }
 
         return {
