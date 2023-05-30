@@ -232,12 +232,17 @@ export default defineComponent({
                 count++;
             }
 
-            return tempDiv.textContent || tempDiv.innerText || "";
+            // Replace multiple line breaks with a single line break
+            let text = tempDiv.textContent || tempDiv.innerText || "";
+            text = text.replace(/\n\s*\n/g, '\n');
+
+            return text;
         };
 
 
+
         const theryContent = ref("");
-        const similarQueryTheory = ref("布鲁姆");
+        const similarQueryTheory = ref("布鲁姆知识分类");
 
         const eduDesFrameContent = ref("")
         const similarQueryEduDesFrame = ref("语文教学设计一级框架")
@@ -260,22 +265,20 @@ export default defineComponent({
         watchEffect(() => {
             if (searchResultsTheory.value) {
                 let contents = searchResultsTheory.value.map(item => item.page_content);
-                theryContent.value = contents[0]
+                theryContent.value = stripHtmlTags(contents[0])
             }
         });
 
         watchEffect(() => {
             if (searchResultsEduDesFrame.value) {
                 let contents = searchResultsEduDesFrame.value.map(item => item.page_content);
-                eduDesFrameContent.value = contents[0]
+                eduDesFrameContent.value = stripHtmlTags(contents[0])
             }
         });
 
-
-
-
         const strippedLessonText = computed(() => stripHtmlTags(selectedLesson.value.lesson_text));
-        const strippedTeachObje = computed(() => stripHtmlTags(selectedLesson.value.teach_objectives));
+        const strippedTeachObje = computed(() => stripHtmlTags(selectedLesson.value.teach_objectives));       
+
         const systemPrompt = "你是一名语文老师的助理，你的名字叫做“备课小宝”，你将为老师提供帮助，包括：基于各种理论的教学设计，丰富的课堂互动等内容。"
 
         const objectTask = computed(() => {
@@ -375,7 +378,7 @@ export default defineComponent({
             Message,
             Search,
             Star,
-            axios
+            axios,            
             // stopSSE,
         };
     },
