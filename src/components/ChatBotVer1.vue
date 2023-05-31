@@ -51,7 +51,7 @@
                     <div class="group-container" v-if="selectedLessons.includes(lesson.lesson_id)">
                         <div class="group-wrapper">
                             <h3 class="group-title">{{ lesson.lesson_name }}的学科融合（可多选）
-                                <el-button class="add-button" text
+                                <el-button class="add-button" size="small" round type="primary"
                                     @click="showAddContents(lesson.lesson_id, 'disInt')">新增</el-button>
                             </h3>
                             <el-checkbox-group :model-value="selectedDisIntContents[lesson.lesson_id]"
@@ -73,7 +73,8 @@
                     <div class="group-container" v-if="selectedLessons.includes(lesson.lesson_id)">
                         <div class="group-wrapper">
                             <h3 class="group-title">{{ lesson.lesson_name }}的教学设计（可多选）
-                                <el-button text @click="showAddContents(lesson.lesson_id, 'eduDes')">新增</el-button>
+                                <el-button class="add-button" size="small" round type="primary"
+                                    @click="showAddContents(lesson.lesson_id, 'eduDes')">新增</el-button>
                             </h3>
                             <el-checkbox-group v-model="selectedEduDesContents[lesson.lesson_id]"
                                 @change="(value) => onEduDesChange(value, lesson.lesson_id)" class="checkbox-grid">
@@ -523,9 +524,7 @@ export default defineComponent({
     margin: 2x;
 }
 
-.add-button {
-    padding: 0;
-}
+
 
 .checkbox-grid div {
     display: inline-grid;
