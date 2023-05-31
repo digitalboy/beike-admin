@@ -281,8 +281,11 @@ export default defineComponent({
             addMode.value = true;
             currentItem.lesson_id = lesson_id;
             currentItem.group = group;
-            console.log("123", group);
-            dialogTitle.value = '';
+            console.log("123", lessonList);
+            console.log("qqq", lesson_id);
+            const foundRecord = lessonList.value.find(item => item.lesson_id === lesson_id);
+
+            dialogTitle.value = foundRecord.lesson_name + '教学设计之';
             editContent.value = '';
             dialogVisible.value = true;
         };
