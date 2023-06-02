@@ -21,12 +21,13 @@ import 'quill-better-table/dist/quill-better-table.css'
 import tableIcon from '@/assets/table-icon.svg';
 import ImageUploader from "quill-image-uploader";
 import 'quill-image-uploader/dist/quill.imageUploader.min.css';
+import ImageCompress from 'quill-image-compress'
 
 Quill.register({
-    'modules/better-table': QuillBetterTable
+    'modules/better-table': QuillBetterTable,
+    "modules/imageUploader": ImageUploader,
+    'modules/imageCompress': ImageCompress
 }, true)
-
-Quill.register("modules/imageUploader", ImageUploader);
 
 const toolbarOptions = [
     ['bold', 'underline', 'strike'],        // toggled buttons
@@ -63,6 +64,15 @@ export default {
                         }
                     }
                 },
+
+                // imageCompress: {
+                //     quality: 0.7, // default
+                //     maxWidth: 500, // default
+                //     maxHeight: 500, // default
+                //     imageType: 'image/jpeg, image/png', // default
+                //     debug: true, // default
+                // },
+
                 imageUploader: {
                     upload: file => {
                         return new Promise((resolve, reject) => {
@@ -75,7 +85,7 @@ export default {
                             })
                                 .then(response => response.json())
                                 .then(result => {
-                                    console.log("path:",result.path)
+                                    console.log("path:", result.path)
                                     resolve("http://localhost:3000" + result.path); // 修改这里
                                 })
                                 .catch(error => {
