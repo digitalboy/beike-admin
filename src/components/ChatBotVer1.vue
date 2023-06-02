@@ -563,7 +563,7 @@ export default defineComponent({
 
 .group-title {
     position: absolute;
-    top: -9px;
+    top: -12px;
     left: 15px;
     font-size: 14px;
     background-color: #fff;

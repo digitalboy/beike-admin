@@ -19,34 +19,26 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.core'
 import 'quill-better-table/dist/quill-better-table.css'
 import tableIcon from '@/assets/table-icon.svg';
-
+import ImageUploader from "quill-image-uploader";
+import 'quill-image-uploader/dist/quill.imageUploader.min.css';
 
 Quill.register({
     'modules/better-table': QuillBetterTable
 }, true)
 
+Quill.register("modules/imageUploader", ImageUploader);
+
 const toolbarOptions = [
     ['bold', 'underline', 'strike'],        // toggled buttons
     ['blockquote', 'code-block'],
-
     [{ 'header': 1 }, { 'header': 2 }],               // custom button values
     [{ 'list': 'ordered' }, { 'list': 'bullet' }],
     [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-    // [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-    // [{ 'direction': 'rtl' }],                         // text direction
-
-    // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    [{ 'header': [ 3, 4, false] }],
-
+    [{ 'header': [3, 4, false] }],
     [{ 'color': [] }],          // dropdown with defaults
-    // [{ 'font': ['Microsoft-YaHei'] }],
-    // [{ 'align': [] }],
-
     ['clean'],                                         // remove formatting
-
     ['link', 'image', 'video']                        // link and image, video
 ];
-
 
 export default {
     name: 'QuillBetterTableEditor',
@@ -59,7 +51,6 @@ export default {
     mounted() {
         this.quill = new Quill(this.$refs.editor, {
             theme: 'snow',
-
             modules: {
                 toolbar: toolbarOptions,
                 table: false,
@@ -70,6 +61,28 @@ export default {
                                 text: 'Another unmerge cells name'
                             }
                         }
+                    }
+                },
+                imageUploader: {
+                    upload: file => {
+                        return new Promise((resolve, reject) => {
+                            const formData = new FormData();
+                            formData.append("image", file);
+
+                            fetch("http://localhost:3000/uploadimg", { // 修改这里
+                                method: "POST",
+                                body: formData
+                            })
+                                .then(response => response.json())
+                                .then(result => {
+                                    console.log("path:",result.path)
+                                    resolve("http://localhost:3000" + result.path); // 修改这里
+                                })
+                                .catch(error => {
+                                    reject("Upload failed");
+                                    console.error("Error:", error);
+                                });
+                        });
                     }
                 },
                 keyboard: {
@@ -100,9 +113,9 @@ export default {
             tableIcon: tableIcon
         };
     }
-
 }
 </script>
+
 
 <style scoped>
 .ql-editor {

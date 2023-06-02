@@ -4,18 +4,65 @@ const app = express();
 const history = require("connect-history-api-fallback");
 const cors = require("cors");
 const { fetchStreamedChatContent } = require("streamed-chatgpt-api");
+const multer = require('multer');
 
 // 使用 history 中间件
 app.use(history());
 
 // 启用 CORS
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:8080', // 允许来自所有域名的请求
+  methods: ['GET', 'POST'], // 设置允许的HTTP请求类型
+  credentials: true // 允许服务器发送Cookie
+}));
 
 // 解析 JSON 请求体
 app.use(express.json());
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    // 使用原始文件名和原始扩展名
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
 // 静态资源目录
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res, path) => {
+      if (path.endsWith(".png")) {
+        res.setHeader("Content-Type", "image/png");
+      } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+        res.setHeader("Content-Type", "image/jpeg");
+      }
+    },
+  })
+);
+
+app.post("/uploadimg", upload.single("image"), (req, res) => {
+  // req.file 是 'image' 文件
+  // req.body 将包含文本域，如果存在的话
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  // 假设你的服务器可以通过 '/uploads/filename.ext' 访问到上传的文件
+  const fileUrl = "/uploads/" + req.file.filename;
+
+  res.json({ path: fileUrl });
+});
+
+
 
 app.post("/api/openai", async (req, res) => {
   console.log("Received request:", req.body);
