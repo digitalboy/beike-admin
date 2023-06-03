@@ -2,7 +2,7 @@
 node_modules
 /dist
 /json样式
-
+/uploads/*
 
 
 # local env files

@@ -65,13 +65,13 @@ export default {
                     }
                 },
 
-                // imageCompress: {
-                //     quality: 0.7, // default
-                //     maxWidth: 500, // default
-                //     maxHeight: 500, // default
-                //     imageType: 'image/jpeg, image/png', // default
-                //     debug: true, // default
-                // },
+                imageCompress: {
+                    quality: 0.7, // default
+                    maxWidth: 500, // default
+                    maxHeight: 500, // default
+                    imageType: 'image/jpeg, image/png', // default
+                    debug: true, // default
+                },
 
                 imageUploader: {
                     upload: file => {
@@ -79,14 +79,14 @@ export default {
                             const formData = new FormData();
                             formData.append("image", file);
 
-                            fetch("http://localhost:3000/uploadimg", { // 修改这里
+                            fetch(`${process.env.VUE_APP_API_BASE_URL}/uploadimg`, { // 修改这里
                                 method: "POST",
                                 body: formData
                             })
                                 .then(response => response.json())
                                 .then(result => {
                                     console.log("path:", result.path)
-                                    resolve("http://localhost:3000" + result.path); // 修改这里
+                                    resolve(`${process.env.VUE_APP_API_BASE_URL}${result.path}`); // 修改这里
                                 })
                                 .catch(error => {
                                     reject("Upload failed");
