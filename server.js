@@ -10,11 +10,14 @@ const multer = require('multer');
 app.use(history());
 
 // 启用 CORS
-app.use(cors({
-  origin: 'http://localhost:8080', // 允许来自所有域名的请求
-  methods: ['GET', 'POST'], // 设置允许的HTTP请求类型
-  credentials: true // 允许服务器发送Cookie
-}));
+app.use(
+  cors({
+    // origin: "http://localhost:8080", // 允许来自所有域名的请求
+    origin: "http://admin.beike.ai:8080", // 允许来自所有域名的请求
+    methods: ["GET", "POST"], // 设置允许的HTTP请求类型
+    credentials: true, // 允许服务器发送Cookie
+  })
+);
 
 // 解析 JSON 请求体
 app.use(express.json());
