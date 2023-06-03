@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "start": "concurrently \"node server.js\" \"npm run serve\""
+    "start": "concurrently \"node server.js\" \"npm run serve\"",
+    "install-force": "npm install --force"
   },
   "dependencies": {
     "@almars/fetch-event-source": "^2.0.3",
