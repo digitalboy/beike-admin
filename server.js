@@ -1,10 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const app = express();
 const history = require("connect-history-api-fallback");
 const cors = require("cors");
 const { fetchStreamedChatContent } = require("streamed-chatgpt-api");
-const multer = require('multer');
+const multer = require("multer");
 
 // 使用 history 中间件
 app.use(history());
@@ -13,7 +14,7 @@ app.use(history());
 app.use(
   cors({
     // origin: "http://localhost:8080", // 允许来自所有域名的请求
-    origin: "http://admin.beike.ai:8080", // 允许来自所有域名的请求
+    origin: `${process.env.VUE_APP_API_BASE_URL}:8080`,
     methods: ["GET", "POST"], // 设置允许的HTTP请求类型
     credentials: true, // 允许服务器发送Cookie
   })
@@ -36,7 +37,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
 
 // 静态资源目录
 app.use(
@@ -64,8 +64,6 @@ app.post("/uploadimg", upload.single("image"), (req, res) => {
 
   res.json({ path: fileUrl });
 });
-
-
 
 app.post("/api/openai", async (req, res) => {
   console.log("Received request:", req.body);
@@ -111,7 +109,6 @@ app.post("/api/openai", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

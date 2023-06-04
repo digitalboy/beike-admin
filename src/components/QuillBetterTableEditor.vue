@@ -79,14 +79,14 @@ export default {
                             const formData = new FormData();
                             formData.append("image", file);
 
-                            fetch(`${process.env.VUE_APP_API_BASE_URL}/uploadimg`, { // 修改这里
+                            fetch(`${process.env.VUE_APP_API_BASE_URL}:3000/uploadimg`, { // 修改这里
                                 method: "POST",
                                 body: formData
                             })
                                 .then(response => response.json())
                                 .then(result => {
                                     console.log("path:", result.path)
-                                    resolve(`${process.env.VUE_APP_API_BASE_URL}${result.path}`); // 修改这里
+                                    resolve(`${process.env.VUE_APP_API_BASE_URL}:3000${result.path}`); // 修改这里
                                 })
                                 .catch(error => {
                                     reject("Upload failed");
