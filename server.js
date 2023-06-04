@@ -14,7 +14,7 @@ app.use(history());
 app.use(
   cors({
     // origin: "http://localhost:8080", // 允许来自所有域名的请求
-    origin: `${process.env.VUE_APP_API_BASE_URL}:8080`,
+    origin: `${process.env.VUE_APP_API_BASE_URL}`,
     methods: ["GET", "POST"], // 设置允许的HTTP请求类型
     credentials: true, // 允许服务器发送Cookie
   })
