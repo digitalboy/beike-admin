@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      VUE_APP_API_BASE_URL: https://admin.beike.ai:3000
+      VUE_APP_API_BASE_URL: https://admin.beike.ai
 
     steps:
       - name: Checkout repository
