@@ -87,11 +87,11 @@ export default {
                                 .then(response => response.json())
                                 .then(result => {
                                     console.log("path:", result.path)
-                                    resolve(`${process.env.VUE_APP_API_BASE_URL}${result.path}`); // 修改这里
+                                    resolve(`${result.path}`); // 修改这里
                                 })
                                 .catch(error => {
                                     reject("Upload failed");
-                                    console.error("Error:", error);
+                                    console.error("Error:",error);
                                 });
                         });
                     }
