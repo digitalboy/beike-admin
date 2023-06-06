@@ -36,6 +36,11 @@ const storage = multer.diskStorage({
   },
 });
 
+app.get("/", function (req, res) {
+  res.send("来了!");
+});
+
+
 const upload = multer({ storage: storage });
 
 // 静态资源目录
