@@ -60,7 +60,7 @@ app.post("/uploadimg", upload.single("image"), (req, res) => {
   }
 
   // 假设你的服务器可以通过 '/uploads/filename.ext' 访问到上传的文件
-  const fileUrl = "/uploads/" + req.file.filename;
+  const fileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${req.file.filename}`;
 
   res.json({ path: fileUrl });
 });
