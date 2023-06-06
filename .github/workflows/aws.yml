@@ -37,6 +37,5 @@ jobs:
           chmod 600 private_key.pem
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@$HOST 'mkdir -p /home/ec2-user/beike-admin/dist'
           rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --exclude 'node_modules' --exclude '.git' ./ $USER@$HOST:/home/ec2-user/beike-admin
+          ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@$HOST 'cd /home/ec2-user/beike-admin && npm install && pm2 start server.js'
 
-
-          
