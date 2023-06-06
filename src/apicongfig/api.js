@@ -1,41 +1,41 @@
-const serverIp = "http://server.beike.ai";
+const serverIp = "https://server.beike.ai";
 
 export default {
-  loginUrl: `${serverIp}:8009/api/user/login`,
+  loginUrl: `${serverIp}/api/user/login`,
 
-  subjectListUrl: `${serverIp}:8009/api/subject/list`,
-  lessonListUrl: `${serverIp}:8009/api/lesson/list`,
-  lessonUpdateUrl: `${serverIp}:8009/api/lesson/update`,
-  lessonAddUrl: `${serverIp}:8009/api/lesson/new`,
+  subjectListUrl: `${serverIp}/api/subject/list`,
+  lessonListUrl: `${serverIp}/api/lesson/list`,
+  lessonUpdateUrl: `${serverIp}/api/lesson/update`,
+  lessonAddUrl: `${serverIp}/api/lesson/new`,
 
-  gradeListUrl: `${serverIp}:8009/api/grade/list`,
-  gradeUpdateUrl: `${serverIp}:8009/api/grade/update`,
+  gradeListUrl: `${serverIp}/api/grade/list`,
+  gradeUpdateUrl: `${serverIp}/api/grade/update`,
 
-  unitListUrl: `${serverIp}:8009/api/unit/list`,
-  unitUpdateUrl: `${serverIp}:8009/api/unit/update`,
+  unitListUrl: `${serverIp}/api/unit/list`,
+  unitUpdateUrl: `${serverIp}/api/unit/update`,
 
-  disIntListUrl: `${serverIp}:8009/api/dis_int/list`,
-  disIntUpdateUrl: `${serverIp}:8009/api/dis_int/update`,
-  disIntAddUrl: `${serverIp}:8009/api/dis_int/new`,
-  disIntDelUrl: `${serverIp}:8009/api/dis_int/delete`,
+  disIntListUrl: `${serverIp}/api/dis_int/list`,
+  disIntUpdateUrl: `${serverIp}/api/dis_int/update`,
+  disIntAddUrl: `${serverIp}/api/dis_int/new`,
+  disIntDelUrl: `${serverIp}/api/dis_int/delete`,
 
-  theoryListByTagUrl: `${serverIp}:8009/api/theory/list`,
-  theoryUpdateUrl: `${serverIp}:8009/api/theory/update`,
-  theoryAddUrl: `${serverIp}:8009/api/theory/new`,
-  theoryDelUrl: `${serverIp}:8009/api/theory/delete`,
-  allTagsListUrl: `${serverIp}:8009/api/theory/tags`,
+  theoryListByTagUrl: `${serverIp}/api/theory/list`,
+  theoryUpdateUrl: `${serverIp}/api/theory/update`,
+  theoryAddUrl: `${serverIp}/api/theory/new`,
+  theoryDelUrl: `${serverIp}/api/theory/delete`,
+  allTagsListUrl: `${serverIp}/api/theory/tags`,
 
-  eduDesListURl: `${serverIp}:8009/api/edudes/list`,
-  eduDesAddUrl: `${serverIp}:8009/api/edudes/new`,
-  eduDesUpdateUrl: `${serverIp}:8009/api/edudes/update`,
+  eduDesListURl: `${serverIp}/api/edudes/list`,
+  eduDesAddUrl: `${serverIp}/api/edudes/new`,
+  eduDesUpdateUrl: `${serverIp}/api/edudes/update`,
 
-  creatBotUrl: `${serverIp}:8009/api/chatbot/create_chatbot`,
+  creatBotUrl: `${serverIp}/api/chatbot/create_chatbot`,
 
   // openAI API
   openAIUrl: "https://api.openai.com/v1/chat/completions",
   openAIKey: "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",
 
   // similarity search API
-  similaSearchUrl: `${serverIp}:8009/api/chatbot/similarity-search`,
+  similaSearchUrl: `${serverIp}/api/chatbot/similarity-search`,
 
 }
