@@ -36,7 +36,4 @@ jobs:
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@$HOST 'mkdir -p /home/ec2-user/beike-admin/dist'
-          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --exclude 'node_modules' --exclude '.git' ./ $USER@$HOST:/home/ec2-user/beike-admin/dist
-
-
-          
+          rsync -avz -e "ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --exclude 'node_modules' --exclude '.git' ./ $USER@$HOST:/home/ec2-user/beike-admin
