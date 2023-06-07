@@ -82,7 +82,7 @@ export default {
 
                             console.log("uploads img", process.env.VUE_APP_API_BASE_URL);
 
-                            fetch(`${process.env.VUE_APP_API_BASE_URL}/uploadimg`, { // 修改这里
+                            fetch(`${process.env.VUE_APP_API_BASE_URL}/uploads`, { // 修改这里
                                 method: "POST",
                                 mode: "cors",
                                 body: formData

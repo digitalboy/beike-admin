@@ -57,7 +57,7 @@ app.use(
   })
 );
 
-app.post("/uploadimg", upload.single("image"), (req, res) => {
+app.post("/uploads", upload.single("image"), (req, res) => {
   console.log("Received file upload request");
   // req.file 是 'image' 文件
   // req.body 将包含文本域，如果存在的话
