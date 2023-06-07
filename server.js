@@ -6,6 +6,7 @@ const history = require("connect-history-api-fallback");
 const cors = require("cors");
 const { fetchStreamedChatContent } = require("streamed-chatgpt-api");
 const multer = require("multer");
+const sharp = require("sharp");
 
 // 使用 history 中间件
 app.use(history());
@@ -28,18 +29,22 @@ const storage = multer.diskStorage({
     cb(null, "dist/uploads/");
   },
   filename: function (req, file, cb) {
-    // 使用原始文件名和原始扩展名
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+    // Use the original filename without extension
+    const filename = file.fieldname + "-" + Date.now();
+    const extension = path.extname(file.originalname);
+    cb(null, filename + extension);
+
+    // Create a smaller version of the image using sharp
+    const smallImageFilename = `${filename}-s${extension}`;
+    sharp(file.path)
+      .resize(200) // Change this value according to your needs
+      .toFile(`dist/uploads/${smallImageFilename}`);
   },
 });
 
 app.get("/", function (req, res) {
   res.send("来了!");
 });
-
 
 const upload = multer({ storage: storage });
 
@@ -59,19 +64,19 @@ app.use(
   })
 );
 
-
 app.post("/uploads", upload.single("image"), (req, res) => {
   console.log("Received file upload request");
-  // req.file 是 'image' 文件
-  // req.body 将包含文本域，如果存在的话
+
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // 服务器可以通过 '/uploads/filename.ext' 访问到上传的文件
   const fileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${req.file.filename}`;
+  const smallFileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${
+    req.file.filename
+  }-s${path.extname(req.file.originalname)}`;
 
-  res.json({ path: fileUrl });
+  res.json({ path: fileUrl, smallPath: smallFileUrl });
 });
 
 app.post("/api/openai", async (req, res) => {
