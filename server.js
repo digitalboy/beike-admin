@@ -1,27 +1,23 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const sharp = require("sharp");
 const app = express();
 const history = require("connect-history-api-fallback");
 const cors = require("cors");
 const { fetchStreamedChatContent } = require("streamed-chatgpt-api");
 const multer = require("multer");
-const sharp = require("sharp");
 
-// 使用 history 中间件
 app.use(history());
 
-// 启用 CORS
 app.use(
   cors({
-    // origin: "http://localhost:8080", // 允许来自所有域名的请求
     origin: `${process.env.VUE_APP_API_BASE_URL}`,
-    methods: ["GET", "POST"], // 设置允许的HTTP请求类型
-    credentials: true, // 允许服务器发送Cookie
+    methods: ["GET", "POST"],
+    credentials: true,
   })
 );
 
-// 解析 JSON 请求体
 app.use(express.json());
 
 const storage = multer.diskStorage({
@@ -29,16 +25,9 @@ const storage = multer.diskStorage({
     cb(null, "dist/uploads/");
   },
   filename: function (req, file, cb) {
-    // Use the original filename without extension
     const filename = file.fieldname + "-" + Date.now();
     const extension = path.extname(file.originalname);
     cb(null, filename + extension);
-
-    // Create a smaller version of the image using sharp
-    const smallImageFilename = `${filename}-s${extension}`;
-    sharp(file.path)
-      .resize(200) // Change this value according to your needs
-      .toFile(`dist/uploads/${smallImageFilename}`);
   },
 });
 
@@ -48,7 +37,6 @@ app.get("/", function (req, res) {
 
 const upload = multer({ storage: storage });
 
-// 静态资源目录
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
@@ -73,11 +61,25 @@ app.post("/uploads", upload.single("image"), (req, res) => {
 
   const fileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${req.file.filename}`;
   const smallFileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${
-    req.file.filename
+    path.parse(req.file.filename).name
   }-s${path.extname(req.file.originalname)}`;
 
-  res.json({ path: fileUrl, smallPath: smallFileUrl });
+  // Create a smaller version of the image using sharp
+  const smallImageFilename = `dist/uploads/${
+    path.parse(req.file.filename).name
+  }-s${path.extname(req.file.originalname)}`;
+  sharp(req.file.path)
+    .resize(200) // Change this value according to your needs
+    .toFile(smallImageFilename, (err, info) => {
+      if (err) {
+        console.error("Error creating small image:", err);
+        return res.status(500).json({ message: "Error creating small image" });
+      }
+      res.json({ path: fileUrl, smallPath: smallFileUrl });
+    });
 });
+
+// ... Rest of your code
 
 app.post("/api/openai", async (req, res) => {
   console.log("Received request:", req.body);
