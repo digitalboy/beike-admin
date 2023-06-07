@@ -52,10 +52,13 @@ app.use(
         res.setHeader("Content-Type", "image/png");
       } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
         res.setHeader("Content-Type", "image/jpeg");
+      } else if (path.endsWith(".webp")) {
+        res.setHeader("Content-Type", "image/webp");
       }
     },
   })
 );
+
 
 app.post("/uploads", upload.single("image"), (req, res) => {
   console.log("Received file upload request");

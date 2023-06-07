@@ -69,7 +69,7 @@ export default {
                     quality: 0.7, // default
                     maxWidth: 500, // default
                     maxHeight: 500, // default
-                    imageType: 'image/jpeg, image/png', // default
+                    imageType: 'image/jpeg, image/png, image/webp', // default
                     debug: true, // default
                 },
 
