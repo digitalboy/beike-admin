@@ -25,7 +25,7 @@ app.use(express.json());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, "dist/uploads/");
   },
   filename: function (req, file, cb) {
     // 使用原始文件名和原始扩展名
