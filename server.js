@@ -65,7 +65,7 @@ app.post("/uploadimg", upload.single("image"), (req, res) => {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  // 假设你的服务器可以通过 '/uploads/filename.ext' 访问到上传的文件
+  // 服务器可以通过 '/uploads/filename.ext' 访问到上传的文件
   const fileUrl = `${process.env.VUE_APP_API_BASE_URL}/uploads/${req.file.filename}`;
 
   res.json({ path: fileUrl });

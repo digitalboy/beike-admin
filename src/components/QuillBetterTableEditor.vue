@@ -82,6 +82,7 @@ export default {
                             console.log("uploads img");
                             fetch(`${process.env.VUE_APP_API_BASE_URL}/uploadimg`, { // 修改这里
                                 method: "POST",
+                                mode: "cors",
                                 body: formData
                             })
                                 .then(response => response.json())
