@@ -79,7 +79,7 @@ export default {
                         return new Promise((resolve, reject) => {
                             const formData = new FormData();
                             formData.append("image", file);
-                            console.log("uploads img");
+                            console.log("uploads img", console.log(process.env.VUE_APP_API_BASE_URL));
                             fetch(`${process.env.VUE_APP_API_BASE_URL}/uploadimg`, { // 修改这里
                                 method: "POST",
                                 mode: "cors",
