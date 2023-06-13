@@ -75,6 +75,8 @@
                             <h3 class="group-title">{{ lesson.lesson_name }}的教学设计（可多选）
                                 <el-button class="add-button" size="small" round type="primary"
                                     @click="showAddContents(lesson.lesson_id, 'eduDes')">新增</el-button>
+                                <el-button class="add-button" size="small" round type="primary"
+                                    @click="readEduDes = true">从json批量新增</el-button>
                             </h3>
                             <el-checkbox-group v-model="selectedEduDesContents[lesson.lesson_id]"
                                 @change="(value) => onEduDesChange(value, lesson.lesson_id)" class="checkbox-grid">
@@ -124,7 +126,6 @@
     </div>
 
     <el-dialog v-model="dialogVisible" title="请编辑内容" width="70%" draggable="true">
-
         <el-input v-model="dialogTitle" :placeholder="currentItem.title" maxlength="100" type="text"
             show-word-limit></el-input>
         <div style="margin: 20px;" />
@@ -148,10 +149,7 @@
             <el-button type="primary" @click="submitAddEduDesForm" v-if="addMode && currentItem.group === 'eduDes'">
                 添加教学设计内容
             </el-button>
-
-
         </span>
-
     </el-dialog>
 
     <el-dialog title="理论列表" v-model="theoryDialogVisible" :before-close="handleClose">
@@ -164,6 +162,10 @@
                 <div style="margin: 10px;"></div>
             </el-list-item>
         </el-list>
+    </el-dialog>
+
+    <el-dialog v-model="readEduDes" title="上传JSON文件" width="70%" draggable="true">
+        <ReadEduDesJson />
     </el-dialog>
 </template>
 
@@ -185,12 +187,14 @@ import QuillBetterTableEditor from '@/components/QuillBetterTableEditor.vue'
 
 import useCreateChatbot from "@/composables/useCreateChatbot";
 
+import ReadEduDesJson from '@/components/ReadEduDesJson.vue';
 
 
 export default defineComponent({
     name: 'ChatBotVer1',
     components: {
         QuillBetterTableEditor,
+        ReadEduDesJson,
     },
     setup() {
         const selectedDisIntContents = reactive({});
@@ -211,6 +215,7 @@ export default defineComponent({
 
         const dialogVisible = ref(false);
         const theoryDialogVisible = ref(false);
+        const readEduDes = ref(false);
         const dialogTitle = ref('');
         const editContent = ref('');
         const currentItem = reactive({ id: '', title: '', content: '', group: '' });
@@ -503,6 +508,7 @@ export default defineComponent({
             createBotStatus,
             onDisIntChange,
             onEduDesChange,
+            readEduDes
         };
     },
 });
